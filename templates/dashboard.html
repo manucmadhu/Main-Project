@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard">
+    <h2>User Dashboard</h2>
+    <p>Current Usage: {{ current_usage }}</p>
+    <p>Predicted Usage: {{ predicted_usage }}</p>
+    <h3>Bill Details</h3>
+    <ul>
+        {% for item in bill_details %}
+        <li>{{ item.appliance }}: ₹{{ item.bill }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'chatbot' %}">Get Chat Support</a>
+</div>
+{% endblock %}

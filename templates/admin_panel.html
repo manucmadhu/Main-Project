@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="admin-panel">
+    <h2>Admin Panel</h2>
+    <h3>Manage Generators</h3>
+    <ul>
+        {% for generator in generators %}
+        <li>Generator {{ generator.id }}: Status - {{ generator.status }}, Capacity - {{ generator.capacity }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'schedule_maintenance' %}">Schedule Maintenance</a>
+</div>
+{% endblock %}
