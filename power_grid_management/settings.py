@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'admin_panel',
     'chatbot',
     'notifications',
+    'core',
 ]
 
 MIDDLEWARE = [

@@ -13,3 +13,5 @@ def dashboard_view(request):
         ],
     }
     return JsonResponse(data)
+def index(request):
+    return render(request, 'dashboard/index.html')  # Replace with the correct template path
