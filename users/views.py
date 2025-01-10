@@ -28,21 +28,11 @@ def login_view(request):
         form = AuthenticationForm()
     
     return render(request, 'login.html', {'form': form})
-# In your views.py
-# def signup_view(request):
-#     if request.method == 'POST':
-#         form = SignupForm(request.POST)
-#         if form.is_valid():
-#             # Handle form saving here
-#             return redirect('login')  # Redirect to login after successful signup
-#     else:
-#         form = SignupForm()
-#     return render(request, 'signup.html', {'form': form})
-
 
 def logout_view(request):
     logout(request)
     return redirect('login')
+
 def dashboard_view(request):
     data = {
         'current_usage': '150 kWh',
@@ -53,5 +43,6 @@ def dashboard_view(request):
         ],
     }
     return JsonResponse(data)
+
 def signup_view(request):
     return render(request,'signup.html')
