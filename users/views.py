@@ -2,9 +2,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
-
-# views.py
-
+from . models import User
+import bcrypt
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
@@ -44,5 +43,23 @@ def dashboard_view(request):
     }
     return JsonResponse(data)
 
+
+def hash_password(password):
+  """Hashes the given password using bcrypt."""
+  salt = bcrypt.gensalt()  # Generate a random salt
+  hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt) 
+  return hashed_password.decode('utf-8')
+
+def verify_password(password, hashed_password):
+  """Verifies if the given password matches the hashed password."""
+  return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
+
 def signup_view(request):
+    if request.method == 'POST':
+        user_password = request.POST['password']
+         
+        User(uuid=request.POST['userid'],username=request.POST['username'],email=request.POST,password=hash_password(user_password),role ='user').save()
+        return render(request,'login.html')
     return render(request,'signup.html')
+
+    

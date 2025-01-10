@@ -5,19 +5,26 @@
     <h2>Signup</h2>
     <form method="post" action="{% url 'signup' %}">
         {% csrf_token %}
-        
+
+        <label for="userid">User ID</label>
+        <input type="text" id="userid" name="userid" value="{{ request.POST.userid|default:'' }}" required>
+
         <label for="username">Username</label>
-        <input type="text" name="username" required>
+        <input type="text" id="username" name="username" value="{{ request.POST.username|default:'' }}" required>
 
         <label for="email">Email</label>
-        <input type="email" name="email" required>
+        <input type="email" id="email" name="email" value="{{ request.POST.email|default:'' }}" required>
 
         <label for="password">Password</label>
-        <input type="password" name="password" required>
+        <input type="password" id="password" name="password" required>
 
         <label for="confirm_password">Confirm Password</label>
-        <input type="password" name="confirm_password" required>
-
+        <input type="password" id="confirm_password" name="confirm_password" required>
+        
+        {% if form.errors.password %}
+            <p style="color: red;">Passwords do not match.</p>
+        {% endif %}
+        
         <button type="submit">Signup</button>
     </form>
 </div>
