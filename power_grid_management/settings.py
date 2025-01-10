@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'chatbot',
     'notifications',
     'core',
+    'grid',
 ]
 
 MIDDLEWARE = [
