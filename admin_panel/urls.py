@@ -5,5 +5,5 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('generators/', views.manage_generators, name='manage_generators'),# Your other paths
+    path('generators/', views.manage_generators, name='manage_generators'),
 ]

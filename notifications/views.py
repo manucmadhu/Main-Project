@@ -1,14 +1,10 @@
-# notifications/views.py
-from django.http import HttpResponse
+from django.http import JsonResponse
 
-def notification_list(request):
-    return HttpResponse("List of Notifications")
-
-def create_notification(request):
-    return HttpResponse("Create a New Notification")
-from django.shortcuts import render
-
-# Create the notification_home view
-def notification_home(request):
-    # Implement the logic for this view, e.g., fetching notifications
-    return render(request, 'notifications/home.html')
+def notifications_view(request):
+    data = {
+        'notifications': [
+            {'user': 'User 1', 'message': 'Scheduled maintenance tomorrow'},
+            {'user': 'User 2', 'message': 'High power consumption detected'},
+        ]
+    }
+    return JsonResponse(data)

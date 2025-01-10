@@ -37,14 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-     'users',
+    'users',
     'dashboard',
     'admin_panel',
     'chatbot',
     'notifications',
-    'core',
-    'grid',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -58,11 +57,15 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'power_grid_management.urls'
 
+# settings.py
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [
+            BASE_DIR / 'templates',  # this is where global templates might reside
+        ],
+        'APP_DIRS': True,  # this allows Django to look for templates within app directories
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -74,6 +77,7 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'power_grid_management.wsgi.application'
 
 
@@ -82,8 +86,12 @@ WSGI_APPLICATION = 'power_grid_management.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'main',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',  # Or your database host
+        'PORT': '3306',       # Default MySQL port
     }
 }
 
