@@ -61,7 +61,7 @@ def cauthenticate(request):
         # Custom user authentication
         user = check(username, password)
         if user is not None:
-            login(request, user)  # Logs in the user manually
+            # login(request, user)  # Logs in the user manually
 
             # Redirect based on role
             if user.role.lower() == 'admin':

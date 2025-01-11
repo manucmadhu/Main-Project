@@ -2,10 +2,17 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 
 class User(AbstractUser):
-    ROLE_CHOICES = [('admin', 'Admin'), ('user', 'User')]
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
-    
+    ROLE_CHOICES = [
+        ('admin', 'Admin'),
+        ('user', 'User'),
+    ]
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES,)
 class bear(models.Model):
+    ROLE_CHOICES = [
+        ('admin', 'Admin'),
+        ('user', 'User'),
+    ]
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES,null=True,default='user')
     admin=models.IntegerField(default=0)
     uuid = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=100, default=None, blank=True, null=True)
