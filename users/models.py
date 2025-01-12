@@ -1,55 +1,68 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
-import uuid
+
 class User(AbstractUser):
-    ROLE_CHOICES = [('admin', 'Admin'), ('user', 'User')]
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES,default='user')
-#     uuid=models.CharField(max_length=50,primary_key=True,unique=True,default=0)
-#     name=models.CharField(max_length=100,default=None)
-#     username=models.CharField(unique=True,max_length=50)
-#     password=models.CharField(max_length=100)
-#     profile_pic = models.CharField(max_length = 500, blank=True)
-#     email = models.CharField(max_length = 100, blank=True)
-#     current_usage =models.IntegerField(blank=True,default=0)
-#     avg_usage=models.IntegerField(blank=True,default=0)
-#     bill_amount=models.IntegerField(default=0)
-#     pending=models.IntegerField(default=0)
-#     grid=models.CharField(max_length=50,default='0')
-#     activity_status=models.BooleanField(default=True)
-
-class appliance:
-    uuid=models.CharField(primary_key=True)
-    name=models.CharField(max_length=100)
-    useruid=models.CharField(null=False)
-    avg_consp=models.IntegerField(default=0)
+    ROLE_CHOICES = [
+        ('admin', 'Admin'),
+        ('user', 'User'),
+    ]
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES,)
+class bear(models.Model):
+    ROLE_CHOICES = [
+        ('admin', 'Admin'),
+        ('user', 'User'),
+    ]
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES,null=True,default='user')
+    admin=models.IntegerField(default=0)
+    uuid = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=100, default=None, blank=True, null=True)
+    username = models.CharField(unique=True, max_length=50)
+    password = models.CharField(max_length=100)
+    profile_pic = models.CharField(max_length=500, blank=True, null=True)
+    email = models.EmailField(max_length=255, blank=True, null=True,unique=True)
+    current_usage = models.IntegerField(default=0, blank=True, null=True)
+    avg_usage = models.IntegerField(default=0, blank=True, null=True)
+    bill_amount = models.IntegerField(default=0, blank=True, null=True)
+    pending = models.IntegerField(default=0, blank=True, null=True)
+    grid = models.ForeignKey('Grid', on_delete=models.SET_NULL, null=True, blank=True)
+    activity_status = models.BooleanField(default=True)
+    groups = models.ManyToManyField(Group, related_name='bear_users', blank=True)
+    user_permissions = models.ManyToManyField(Permission, related_name='bear_user_permissions', blank=True)
+    # REQUIRED_FIELDS = ['uuid']
+    # USERNAME_FIELD = 'email'
+    is_anonymous = False
+    is_authenticated=False
     
-class generator:
-    uuid=models.CharField(primary_key=True)
-    fuel=models.CharField(max_length=3)
-    activity_status=models.BooleanField(default=True)
-    curent_production=models.IntegerField(default=0)
-    peak_capcity=models.IntegerField(default=0)
-    grids=models.IntegerField(default=0)
-    #trying to link section from generators Note it
+class appliance(models.Model):
+    uuid = models.CharField(primary_key=True, max_length=50)
+    name = models.CharField(max_length=100)
+    users = models.IntegerField(default=0)
+    avg_consp = models.IntegerField(default=0)
 
-class section:
-    uuid=models.CharField(primary_key=True)
-    activity_status=models.BooleanField(default=True)
-    grids=models.IntegerField(default=0)
-    users=models.IntegerField(default=0)
-    load=models.IntegerField(default=0)
-    gen=models.CharField(null=False,blank=False)
+class generator(models.Model):
+    uuid = models.CharField(primary_key=True, max_length=50)
+    fuel = models.CharField(max_length=3)
+    activity_status = models.BooleanField(default=True)
+    current_production = models.IntegerField(default=0)
+    peak_capacity = models.IntegerField(default=0)
+    sections = models.IntegerField(default=0)
 
+class section(models.Model):
+    uuid = models.CharField(primary_key=True, max_length=50)
+    activity_status = models.BooleanField(default=True)
+    grids = models.IntegerField(default=0)
+    users = models.IntegerField(default=0)
+    load = models.IntegerField(default=0)
 
-class grid:
-    uuid=models.CharField(primary_key=True)
-    activity_status=models.BooleanField(default=True)
-    users=models.IntegerField(default=0)
-    load=models.IntegerField(default=0)
-    section=models.CharField(max_length=50)
+class grid(models.Model):
+    uuid = models.CharField(primary_key=True, max_length=50)
+    activity_status = models.BooleanField(default=True)
+    users = models.IntegerField(default=0)
+    load = models.IntegerField(default=0)
 
-class bill:
-    uuid=models.CharField(primary_key=True)
-    useruid=models.CharField(null=False,blank=False)
-    amount=models.IntegerField(blank=False,null=False)
-    paid=models.BooleanField(default=False)
+class bill(models.Model):
+    uuid = models.CharField(primary_key=True, max_length=50)
+    user = models.CharField(max_length=50,null=True)
+    paid = models.BooleanField(default=False)
+
+# user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)  # Assuming '1' is a valid default User
