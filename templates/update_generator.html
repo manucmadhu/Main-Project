@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Update Generator</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="fuel">Fuel:</label>
+        <input type="text" name="fuel" value="{{ generator.fuel }}" required>
+
+        <label for="status">Status:</label>
+        {% comment %} <input type="" name="status" value="{{ generator.activity_status }}" required> {% endcomment %}
+        <p>Please select the activity status:</p>
+          <input type="radio" id="on" name="status" value={{ generator.activity_status }}>
+          <label for="on">ON</label><br>
+          <input type="radio" id="off" name="status" value={{ generator.activity_status }}>
+          <label for="off">OFF</label><br>
+         
+        >
+
+        <label for="current_production">Current Production:</label>
+        <input type="number" name="current_production" value="{{ generator.current_production}}" required>
+
+        <label for="peak_capacity">Peak Capacity:</label>
+        <input type="number" name="peak_capacity" value="{{ generator.peak_capacity }}" required>
+
+        <button type="submit">Save Changes</button>
+    </form>
+{% endblock %}

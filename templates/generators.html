@@ -1,54 +1,38 @@
 {% extends 'base.html' %}
 
-{% block title %}Generator Management{% endblock %}
-
 {% block content %}
-<h1>Welcome, Admin</h1>
-<div class="row">
     <div class="container">
-        <div class="header"></div>
-        <div class="logout">Logout</div>
-        <div class="admin">ADMIN</div>
-        <div class="profile-pic"></div>
-        <div class="title">Generators</div>
-
-        <!-- Search Form -->
-        <div class="search-form" style="margin-top: 20px;">
-            <form method="get" action="{% url 'view_generator' %}">
-                <label for="generator_id">Enter Generator ID:</label>
-                <input type="number" id="generator_id" name="generator_id" required>
-                <button type="submit">View Generator</button>
-            </form>
+        <h1>Power Grid Management</h1>
+        <div class="welcome">
+            <p>Welcome, Admin</p>
+            <a href="{% url 'logout' %}">Logout</a>
         </div>
 
-        <!-- Display Generator Details (if available) -->
+        <h2>Generators</h2>
+
+        <!-- Generator ID Input Form -->
+        <form method="GET" action=""{% url 'view_generator' generator_id=1 %}">
+            <label for="generator_id">Enter Generator ID: </label>
+            <input type="text" id="generator_id" name="generator_id" required>
+            <button type="submit">View Generator</button>
+        </form>
+
+        <!-- Display Generator Details -->
         {% if generator %}
-        <div class="card" style="margin-top: 30px;">
-            <h2>Generator {{ generator.id }}</h2>
-            <form method="post" action="{% url 'update_generator' generator.id %}">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="fuel">Fuel (%)</label>
-                    <input type="number" id="fuel" name="fuel" value="{{ generator.fuel }}">
-                </div>
-                <div class="form-group">
-                    <label for="status">Status</label>
-                    <input type="text" id="status" name="status" value="{{ generator.status }}">
-                </div>
-                <div class="form-group">
-                    <label for="power_produced">Power Produced (kW)</label>
-                    <input type="number" id="power_produced" name="power_produced" value="{{ generator.power_produced }}">
-                </div>
-                <div class="form-group">
-                    <label for="peak_capacity">Peak Capacity (kW)</label>
-                    <input type="number" id="peak_capacity" name="peak_capacity" value="{{ generator.peak_capacity }}">
-                </div>
-                <button type="submit">Update Generator</button>
-            </form>
-        </div>
+            <div class="generator-details">
+                <h3>Generator Details</h3>
+                <p><strong>Fuel:</strong> {{ generator.fuel }}</p>
+                <p><strong>Status:</strong> {{ generator.activity_status }}</p>
+                <p><strong>Power Produced:</strong> {{ generator.current_production }}</p>
+                <p><strong>Peak Capacity:</strong> {{ generator.peak_capacity }}</p>
+                <a href="{% url 'update_generator' generator_id=generator.uuid %}">Edit Generator</a>
+            </div>
         {% else %}
-        <p>No generator selected. Please enter a valid generator ID.</p>
+            <p>No generator selected. Please enter a valid generator ID.</p>
         {% endif %}
+
+        <footer>
+            <p>&copy; 2025 Power Grid Management</p>
+        </footer>
     </div>
-</div>
 {% endblock %}

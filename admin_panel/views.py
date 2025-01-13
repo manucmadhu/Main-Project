@@ -32,19 +32,31 @@ def manage_generators(request):
 #         return redirect('generators')  # Redirect to the generators page
 #     return render(request, 'generators.html')
 
-def view_generator(request):
-    generator_uuid = request.GET.get('generator_id', None)
+def view_generator(request,generator_id):
     generator = None
-    if generator_uuid:
-        generator = get_object_or_404(user_model.generator, uuid=generator_uuid)
-    return render(request, 'your_template.html', {'generator': generator})
+    generator_id = request.GET.get('generator_id', None)  # Get generator_id from query parameter
 
-def update_generator(request, id):
-    generator = get_object_or_404(user_model.generator, id=id)
+    if generator_id:
+        generator = get_object_or_404(user_model.generator, uuid=generator_id)
+
+    return render(request, 'generators.html', {'generator': generator})
+
+def update_generator(request, generator_id):
+    generator = get_object_or_404(user_model.generator, uuid=generator_id)
+
     if request.method == 'POST':
-        generator.fuel = request.POST.get('fuel')
-        generator.status = request.POST.get('status')
-        generator.power_produced = request.POST.get('power_produced')
-        generator.peak_capacity = request.POST.get('peak_capacity')
+        # Update generator fields with form data
+        generator.fuel = request.POST.get('fuel', generator.fuel)
+        activity_status = request.POST.get('status', generator.activity_status)
+        if activity_status =="on" or activity_status=='ON':
+            generator.activity_status = True
+        else :
+            generator.activity_status = False
+        generator.current_production = request.POST.get('current_production', generator.current_production)
+        generator.peak_capacity = request.POST.get('peak_capacity', generator.peak_capacity)
         generator.save()
-        return redirect('view_generator')  # Redirect to the view generator page
+
+        # Redirect back to the view page after saving
+        return redirect('view_generator', generator_id=generator.uuid)
+
+    return render(request, 'update_generator.html', {'generator': generator})

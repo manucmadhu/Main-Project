@@ -14,7 +14,9 @@
                 <p>Active Generators: 7</p>
                 <p >Total Power Generated: 15.6Mw</p>
                 <p class="card-text">View and manage Generators.</p>
-                <a href="/generators/1" class="btn btn-light">View Generators</a>
+                <a href="{% url 'view_generator' generator_id=1 %}" class="btn btn-light">View Generators</a>
+
+                {% comment %} <a href="/generators/1" class="btn btn-light">View Generators</a> {% endcomment %}
             </div>
         </div>
     </div>
