@@ -13,4 +13,5 @@ urlpatterns = [
     path('notifications/', include('notifications.urls')),
     path('signup',user_views.signup_view,name='signup'),
     path('generators/<int:generator_id>/', admin_views.update_generator, name='update_generator'),
+    path('view_generator/', admin_views.view_generator, name='view_generator'),
 ]

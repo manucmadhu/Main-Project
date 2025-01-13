@@ -28,7 +28,7 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-@login_required  # Ensures only authenticated users can access this view
+# @login_required  # Ensures only authenticated users can access this view
 def dashboard_view(request):
     data = {
         'current_usage': '180 kWh',
