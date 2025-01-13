@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Update Grid</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="activity_status">Status:</label>
+        <input 
+        type="checkbox" 
+        id="activity_status" 
+        name="activity_status" 
+        value="on" 
+        {% if grid.activity_status %}checked{% endif %}>
+        
+        <label for="users">Users:</label>
+        <input type="number" name="users" value="{{ grid.users}}" required>
+
+        <label for="load">Load:</label>
+        <input type="number" name="load" value="{{ grid.load }}" required>
+
+        <button type="submit">Save Changes</button>
+    </form>
+{% endblock %}

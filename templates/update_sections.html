@@ -4,14 +4,7 @@
     <h1>Update Section</h1>
     <form method="POST">
         {% csrf_token %}
-        {% comment %} <label for="fuel">Fuel:</label>
-        <input type="text" name="fuel" value="{{ generator.fuel }}" required> {% endcomment %}
 
-        {% comment %} <p>Please select the activity status:</p>
-          <input type="radio" id="on" name="sctivity_status" value={{ section.activity_status }}>
-          <label for="on">ON</label><br>
-          <input type="radio" id="off" name="sctivity_status" value={{ section.activity_status }}>
-          <label for="off">OFF</label><br> {% endcomment %}
         <label for="activity_status">Status:</label>
         <input 
         type="checkbox" 

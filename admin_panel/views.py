@@ -95,3 +95,42 @@ def update_generator(request, generator_id):
         return redirect('view_generator', generator_id=generator.uuid)
 
     return render(request, 'update_generator.html', {'generator': generator})
+
+def view_grid(request,grid_id):
+    grid = None
+    grid_id = request.GET.get('grid_id', None)  # Get generator_id from query parameter
+
+    if grid_id:
+        grid = get_object_or_404(user_model.grid, uuid=grid_id)
+
+    return render(request, 'grid.html', {'grid': grid})
+
+def update_grid(request, grid_id):
+    grid = get_object_or_404(user_model.grid, uuid=grid_id)
+
+    if request.method == 'POST':
+        # Handle activity status
+        activity_status = request.POST.get('activity_status', 'off')  # Default to 'off' if not in POST
+        grid.activity_status = activity_status == 'on'
+
+        # Update other fields with form data
+        try:
+            grid.users = int(request.POST.get('users', grid.users))
+            grid.load = float(request.POST.get('load', grid.load))
+        except ValueError:
+            # Handle invalid numeric input
+            messages.error(request, "Invalid input for users or load. Please provide valid numbers.")
+            return render(request, 'update_grid.html', {'grid': grid})
+
+        # Adjust fields based on logic
+        if not grid.activity_status or grid.users == 0 or grid.load == 0:
+            grid.activity_status = False
+            grid.users = 0
+            grid.load = 0
+
+        # Save updates
+        grid.save()
+
+        return redirect('view_grid', grid_id=grid.uuid)
+
+    return render(request, 'update_grid.html', {'grid': grid})
