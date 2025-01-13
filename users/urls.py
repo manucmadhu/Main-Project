@@ -10,6 +10,6 @@ urlpatterns = [
     path('ad',views.login_view,name='login_view'),
     path('generators/<int:generator_id>', admin_views.view_generator, name='view_generator'),  # Corrected URL pattern
     path('generators/<str:generator_id>/update/', admin_views.update_generator, name='update_generator'),
-    path('sections/<int:section_id>', admin_views.view_generator, name='view_sections'), 
-    path('sections/<str:section_id>/update/', admin_views.update_generator, name='update_section'),
+    path('sections/<int:section_id>', admin_views.view_section, name='view_section'), 
+    path('sections/<str:section_id>/update/', admin_views.update_section, name='update_section'),
 ]   

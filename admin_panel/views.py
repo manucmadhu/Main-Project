@@ -13,44 +13,53 @@ def manage_generators(request):
     return JsonResponse(data)
 
 
-def view_sections(request,section_id):
-    section = None
-    section_id = request.GET.get('section_id', None)  # Get generator_id from query parameter
-
-    if section_id:
-        section = get_object_or_404(user_model.section, uuid=section_id)
-
+def view_section(request, section_id):
+    section = get_object_or_404(user_model.section, uuid=section_id)
     return render(request, 'sections.html', {'section': section})
 
-def update_sections(request, section_id):
+
+def update_section(request, section_id):
     section = get_object_or_404(user_model.section, uuid=section_id)
 
     if request.method == 'POST':
-        activity_status=request.POST.get('activity_status',section.activity_statusactivity_status)
-        section.grids=request.POST.get('grids',section.grids)
-        section.users=request.POST.get('users',section.users)
-        section.load=request.POST.get('load',section.load)
-        section.max_load=request.POST.get('max_load',section.max_load)
-        if activity_status=='OFF' or activity_status=='off':
-            section.activity_status=False
-            section.users=0
-            section.load=0
-            section.grids=None
+        # Update fields with data from the form
+        activity_status = request.POST.get('activity_status', 'off')  # Default to 'off' if not provided
+        section.grids = request.POST.get('grids', section.grids)
+        section.users = int(request.POST.get('users', section.users))  # Convert to int
+        section.load = int(request.POST.get('load', section.load))  # Convert to int
+        section.max_load = int(request.POST.get('max_load', section.max_load))  # Convert to int
+
+        # Logic for updating activity status and related fields
+        if activity_status.lower() == 'off':
+            section.activity_status = False
+            section.users = 0
+            section.load = 0
+            section.grids = None
         else:
-            section.activity_status=True
-        if section.users ==0 :
-            section.load=0
-            section.grids=None
-            section.activity_status=False
-        if section.load>section.max_load :
-            section.load=section.max_load
+            section.activity_status = True
+
+        # Ensure consistency between load, max_load, and users
+        if section.users == 0:
+            section.load = 0
+            section.grids = 0
+            section.activity_status = False
+        elif section.load > section.max_load:
+            section.load = section.max_load
+
+        # Handle cases where load is 0
         if section.load == 0:
-            section.activity_status=False
-            section.users=0
-            section.grids=None
-        return redirect('view_sections', section_id=section.uuid)
+            section.activity_status = False
+            section.users = 0
+            section.grids = 0
+
+        # Save the updated section
+        section.save()
+
+        return redirect('view_sections',section_id=section.uuid)  # Redirect to the correct view (ensure 'view_sections' is defined in urls)
 
     return render(request, 'update_sections.html', {'section': section})
+
+
 def view_generator(request,generator_id):
     generator = None
     generator_id = request.GET.get('generator_id', None)  # Get generator_id from query parameter
@@ -66,8 +75,11 @@ def update_generator(request, generator_id):
     if request.method == 'POST':
         # Update generator fields with form data
         generator.fuel = request.POST.get('fuel', generator.fuel)
-        activity_status = request.POST.get('status', generator.activity_status)
-        if activity_status =="on" or activity_status=='ON':
+        if generator.activity_status is True:
+            activity_status = request.POST.get('activity_status','on')
+        else:
+            activity_status = request.POST.get('activity_status','off')
+        if activity_status =="on":
             generator.activity_status = True
         else :
             generator.activity_status = False

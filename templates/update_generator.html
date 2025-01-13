@@ -7,13 +7,19 @@
         <label for="fuel">Fuel:</label>
         <input type="text" name="fuel" value="{{ generator.fuel }}" required>
 
-        <label for="status">Status:</label>
-        {% comment %} <input type="" name="status" value="{{ generator.activity_status }}" required> {% endcomment %}
-        <p>Please select the activity status:</p>
+        <label for="activity_status">Status:</label>
+<input 
+    type="checkbox" 
+    id="activity_status" 
+    name="activity_status" 
+    value="on" 
+    {% if generator.activity_status %}checked{% endif %}>
+       
+        {% comment %} <p>Please select the activity status:</p>
           <input type="radio" id="on" name="status" value={{ generator.activity_status }}>
           <label for="on">ON</label><br>
           <input type="radio" id="off" name="status" value={{ generator.activity_status }}>
-          <label for="off">OFF</label><br>
+          <label for="off">OFF</label><br> {% endcomment %}
 
         <label for="current_production">Current Production:</label>
         <input type="number" name="current_production" value="{{ generator.current_production}}" required>
