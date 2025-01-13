@@ -15,4 +15,6 @@ urlpatterns = [
     path('signup',user_views.signup_view,name='signup'),
     path('generators/<int:generator_id>', admin_views.view_generator, name='view_generator'),  # Corrected URL pattern
     path('generators/<str:generator_id>/update/', admin_views.update_generator, name='update_generator'),
+    path('sections/<int:section_id>', admin_views.view_generator, name='view_sections'), 
+    path('sections/<str:section_id>/update/', admin_views.update_generator, name='update_section'),
 ]

@@ -53,6 +53,7 @@ class section(models.Model):
     grids = models.IntegerField(default=0)
     users = models.IntegerField(default=0)
     load = models.IntegerField(default=0)
+    max_load=models.IntegerField(default=0)
 
 class grid(models.Model):
     uuid = models.CharField(primary_key=True, max_length=50)

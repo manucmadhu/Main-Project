@@ -8,4 +8,6 @@ urlpatterns = [
     # path('generators/<int:generator_id>/', views.update_generator, name='update_generator'),
     path('generators/<int:generator_id>', views.view_generator, name='view_generator'),  # Corrected URL pattern
     path('generators/<str:generator_id>/update/', views.update_generator, name='update_generator'),
+    path('sections/<int:section_id>', views.view_generator, name='view_sections'), 
+    path('sections/<str:section_id>/update/', views.update_generator, name='update_section'),
 ]
