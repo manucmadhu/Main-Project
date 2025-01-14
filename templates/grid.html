@@ -24,6 +24,9 @@
                 <p><strong>Status:</strong> {{ grid.activity_status }}</p>
                 <p><strong>Users:</strong> {{grid.users}}</p>
                 <p><strong>Load:</strong> {{grid.load}}</p>
+                <p><strong>Section 1:</strong> {{grid.sec1}}</p>
+                <p><strong>Section 2:</strong> {{grid.sec2}}</p>
+                <p><strong>Section 3:</strong> {{grid.sec3}}</p>
                 <a href="{% url 'update_grid' grid_id=grid.uuid %}">Edit Grid</a>
             </div>
         {% else %}

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from users import models as user_model
+from django.db.models import F
 # Create your views here.
 from django.http import JsonResponse
 
@@ -85,16 +86,72 @@ def update_generator(request, generator_id):
             generator.activity_status = False
         generator.current_production = request.POST.get('current_production', generator.current_production)
         generator.peak_capacity = request.POST.get('peak_capacity', generator.peak_capacity)
+        grid1 = request.POST.get('grid1',generator.grid1)
+        grid2 = request.POST.get('grid2',generator.grid2)
+        if generator.grid1 != grid1 :
+            newgrid=get_object_or_404(user_model.grid,uuid=grid1)
+            generator.grid1=grid1
+            generator.grid1power=newgrid.load
+        if generator.grid2 != grid2 :
+            newgrid=get_object_or_404(user_model.grid,uuid=grid2)
+            generator.grid2=grid2
+            generator.grid2power=newgrid.load
         if generator.current_production == 0 :
             generator.activity_status=False
+            generator_off(generator.uuid)
         if generator.activity_status is False :
             generator.current_production = 0
+            generator_off(generator.uuid)
+        if generator.current_production >=generator.peak_capacity:
+            generator.current_production=generator.peak_capacity
+            generator.free=False
+        if generator.grid1power>0 and generator.grid2power >0:
+            generator.free=False
+        else:
+            generator.free=True
         generator.save()
 
         # Redirect back to the view page after saving
         return redirect('view_generator', generator_id=generator.uuid)
 
     return render(request, 'update_generator.html', {'generator': generator})
+
+def generator_off(generator_id):
+    generator = get_object_or_404(user_model.generator, uuid=generator_id)
+    if generator.grid1!=0:
+        free_generator = generator.objects.filter(activity_status=False,peak_capacity__gt=F('current_production') + grid1.load).first()
+        if free_generator is None:
+            grid_off(generator.grid1)
+        if free_generator.grid1 ==0 and generator.grid1!=0 :
+            grid1=get_object_or_404(user_model.grid,uuid=generator.grid1)
+            free_generator.grid1 = grid1.uuid
+            free_generator.grid1power=grid1.load
+            free_generator.current_production+=grid1.load
+        elif free_generator.grid2 ==0 and generator.grid1!=0 :
+            grid1=get_object_or_404(user_model.grid,uuid=generator.grid1)
+            free_generator.grid2 = grid1.uuid
+            free_generator.grid2power=grid1.load
+            free_generator.current_production+=grid1.load
+        generator.save()
+        grid1.save()
+        free_generator.save()
+    elif generator.grid2 !=0 :
+        free_generator = generator.objects.filter(activity_status=False,peak_capacity__gt=F('current_production') + grid2.load).first()
+        if free_generator is None:
+            grid_off(generator.grid2)
+        if free_generator.grid1 == 0 and generator.grid2 != 0 :
+            grid2=get_object_or_404(user_model.grid,uuid=generator.grid2)
+            free_generator.grid1 = grid2.uuid
+            free_generator.current_production+=grid2.load
+        elif free_generator.grid2 ==0 and generator.grid2!=0 :
+            grid1=get_object_or_404(user_model.grid,uuid=generator.grid1)
+            free_generator.grid2 = grid1.uuid
+            free_generator.grid2power=grid1.load
+            free_generator.current_production+=grid1.load
+        generator.save()
+        grid2.save()
+        free_generator.save()
+    return
 
 def view_grid(request,grid_id):
     grid = None
@@ -115,11 +172,11 @@ def update_grid(request, grid_id):
 
         # Update other fields with form data
         try:
-            grid.users = int(request.POST.get('users', grid.users))
-            grid.load = float(request.POST.get('load', grid.load))
+            grid.users = request.POST.get('users', grid.users)
+            grid.load = request.POST.get('load', grid.load)
         except ValueError:
             # Handle invalid numeric input
-            messages.error(request, "Invalid input for users or load. Please provide valid numbers.")
+            # messages.error(request, "Invalid input for users or load. Please provide valid numbers.")
             return render(request, 'update_grid.html', {'grid': grid})
 
         # Adjust fields based on logic
@@ -134,3 +191,24 @@ def update_grid(request, grid_id):
         return redirect('view_grid', grid_id=grid.uuid)
 
     return render(request, 'update_grid.html', {'grid': grid})
+
+def grid_off(grid_id):
+    grid = get_object_or_404(user_model.grid, uuid=grid_id)
+    if grid.sec1:
+        sec_off(grid.sec1)
+    if grid.sec2:
+        sec_off(grid.sec2)
+    if grid.sec3:
+        sec_off(grid.sec3)
+    return
+from django.utils.timezone import now
+from datetime import timedelta
+def sec_off(section_id):
+    section=get_object_or_404(user_model.section_id,uuid=section_id)
+    for user in user_model.bear.objects.filter(section=section.uuid):
+        send_error_message(user.uuid,now(),now()+timedelta(hours=2))
+    return
+
+def send_error_message(user_id,start,end):
+    # Send error message to user
+    return
