@@ -11,12 +11,7 @@
         name="activity_status" 
         value="on" 
         {% if grid.activity_status %}checked{% endif %}>
-        
-        <label for="users">Users:</label>
-        <input type="number" name="users" value="{{ grid.users}}" required>
-
-        <label for="load">Load:</label>
-        <input type="number" name="load" value="{{ grid.load }}" required>
+    
 
         <button type="submit">Save Changes</button>
     </form>

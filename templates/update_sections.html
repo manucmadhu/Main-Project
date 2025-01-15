@@ -13,8 +13,8 @@
         value="on" 
         {% if section.activity_status %}checked{% endif %}>
         
-        <label for="users">Users:</label>
-        <input type="number" name="users" value="{{ section.users}}" required>
+        {% comment %} <label for="users">Users:</label>
+        <input type="number" name="users" value="{{ section.users}}" required> {% endcomment %}
 
         <label for="Grid Id">Grid:</label>
         <input type="number" name="grids" value="{{ section.grids }}" required>

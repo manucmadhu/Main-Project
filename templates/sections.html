@@ -23,6 +23,7 @@
                 <h3>Section Details</h3>
                 <p><strong>Status:</strong> {{ section.activity_status }}</p>
                 <p><strong>Grids:</strong> {{ section.grids }}</p>
+                <p><strong>Users:</strong> {{ section.users }}</p>
                 <p><strong>Current Load:</strong> {{ section.load }}</p>
                 <p><strong>Max Load:</strong> {{ section.max_load }}</p>
                 <a href="{% url 'update_section' section_id=section.uuid %}">Edit Section</a>

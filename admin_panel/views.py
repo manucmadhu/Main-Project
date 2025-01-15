@@ -26,7 +26,7 @@ def update_section(request, section_id):
         # Update fields with data from the form
         activity_status = request.POST.get('activity_status', 'off')  # Default to 'off' if not provided
         # section.grids = request.POST.get('grids', section.grids)
-        section.users = int(request.POST.get('users', section.users))  # Convert to int
+        # section.users = int(request.POST.get('users', section.users))  # Convert to int
         # section.load = int(request.POST.get('load', section.load))  # Convert to int
         section.max_load = int(request.POST.get('max_load', section.max_load))  # Convert to int
         section.users=user_model.bear.objects.filter(section=section.uuid).count()
@@ -177,17 +177,11 @@ def update_grid(request, grid_id):
         grid.activity_status = activity_status == 'on'
 
         # Update other fields with form data
-        try:
-            grid.users = request.POST.get('users', grid.users)
-            grid.load = request.POST.get('load', grid.load)
-        except ValueError:
-            # Handle invalid numeric input
-            # messages.error(request, "Invalid input for users or load. Please provide valid numbers.")
-            return render(request, 'update_grid.html', {'grid': grid})
 
         # Adjust fields based on logic
-        if not grid.activity_status or grid.users == 0 or grid.load == 0:
+        if not grid.activity_status :
             grid.activity_status = False
+            grid_off(grid.uuid)
             grid.users = 0
             grid.load = 0
 

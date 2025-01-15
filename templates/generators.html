@@ -11,7 +11,7 @@
         <h2>Generators</h2>
 
         <!-- Generator ID Input Form -->
-        <form method="GET" action=""{% url 'view_generator' generator_id=1 %}">
+        <form method="GET" action=""href="{% url 'view_generator' generator_id=1 %}">
             <label for="generator_id">Enter Generator ID: </label>
             <input type="text" id="generator_id" name="generator_id" required>
             <button type="submit">View Generator</button>
