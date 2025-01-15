@@ -24,11 +24,11 @@ class bear(models.Model):
     past_usage =models.IntegerField(default=0,blank=True ,null=True)
     avg_usage = models.IntegerField(default=0, blank=True, null=True)
     bill_amount = models.IntegerField(default=0, blank=True, null=True)
-    pending = models.IntegerField(default=0, blank=True, null=True)
+    # pending = models.IntegerField(default=0, blank=True, null=True)
     section=models.CharField(max_length=50,default=0)
     activity_status = models.BooleanField(default=True)
-    groups = models.ManyToManyField(Group, related_name='bear_users', blank=True)
-    user_permissions = models.ManyToManyField(Permission, related_name='bear_user_permissions', blank=True)
+    # groups = models.ManyToManyField(Group, related_name='bear_users', blank=True)
+    # user_permissions = models.ManyToManyField(Permission, related_name='bear_user_permissions', blank=True)
     # REQUIRED_FIELDS = ['uuid']
     # USERNAME_FIELD = 'email'
     is_anonymous = False

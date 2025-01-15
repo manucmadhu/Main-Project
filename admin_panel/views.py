@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from users import models as user_model
+from users.views import check,hashed
 from django.db.models import F,Sum
 # Create your views here.
 from django.http import JsonResponse
@@ -16,7 +17,7 @@ def manage_generators(request):
 
 def view_section(request, section_id):
     section = get_object_or_404(user_model.section, uuid=section_id)
-    return render(request, 'sections.html', {'section': section})
+    return render(request, 'sections.html',section_id=section.uuid)
 
 
 def update_section(request, section_id):
@@ -24,7 +25,10 @@ def update_section(request, section_id):
 
     if request.method == 'POST':
         # Update fields with data from the form
-        activity_status = request.POST.get('activity_status', 'off')  # Default to 'off' if not provided
+        if section.activity_status:
+            activity_status = request.POST.get('activity_status', 'on')
+        else:
+            activity_status = request.POST.get('activity_status', 'off')  # Default to 'off' if not provided
         # section.grids = request.POST.get('grids', section.grids)
         # section.users = int(request.POST.get('users', section.users))  # Convert to int
         # section.load = int(request.POST.get('load', section.load))  # Convert to int
@@ -166,14 +170,17 @@ def view_grid(request,grid_id):
     if grid_id:
         grid = get_object_or_404(user_model.grid, uuid=grid_id)
 
-    return render(request, 'grid.html', {'grid': grid})
+    return render(request, 'grid.html',grid_id=grid.uuid)
 
 def update_grid(request, grid_id):
     grid = get_object_or_404(user_model.grid, uuid=grid_id)
 
     if request.method == 'POST':
         # Handle activity status
-        activity_status = request.POST.get('activity_status', 'off')  # Default to 'off' if not in POST
+        if grid.activity_status:
+            activity_status = request.POST.get('activity_status','on')
+        else:
+            activity_status = request.POST.get('activity_status','off')
         grid.activity_status = activity_status == 'on'
 
         # Update other fields with form data
@@ -212,3 +219,71 @@ def sec_off(section_id):
 def send_error_message(user_id,start,end):
     # Send error message to user
     return
+
+def view_user(request,user_id):
+    user=get_object_or_404(user_model.bear,uuid=user_id)
+    return redirect('users.html',user_id=user.uuid)
+
+def update_user(request,user_id):
+    user = get_object_or_404(user_model.bear, uuid=user_id)
+
+    if request.method == 'POST':
+        # Handle activity status
+        if user.activity_status:
+            activity_status = request.POST.get('activity_status','on') 
+        else:
+            activity_status = request.POST.get('activity_status','off')
+        user.activity_status = activity_status == 'on'
+        if user.activity_status == False:
+            user_off(user)
+        user.username=request.POST.get('user_name',user.username)
+        user.email=request.POST.get('user_email',user.email)
+        user.name=request.POST.get('name',user.name)
+        user.section=request.POST.get('section',user.section)
+        user.bill_amount=request.POST.get('bill_amount',user.bill_amount)
+        user.save()
+        # Save updates
+        return redirect('view_user', user_id=user.uuid)
+
+    return render(request, 'update_user.html', {'user': user})
+
+def user_off(user_id):
+    send_error_message(user_id,now(),now()+timedelta(hours=2))
+    return
+
+def show_user(request,user_id):
+    user=get_object_or_404(user_model.bear,uuid=user_id)
+    return redirect('naiveusers.html',user_id=user.uuid)
+
+
+def edit_user(request,user_id):
+    user = get_object_or_404(user_model.bear, uuid=user_id)
+
+    if request.method == 'POST':
+        # Handle activity status
+        user.username=request.POST.get('user_name',user.username)
+        user.email=request.POST.get('user_email',user.email)
+        user.name=request.POST.get('name',user.name)
+        user.section=request.POST.get('section',user.section)
+        user.profile_pic=request.POST.get('profile_pic',user.profile_pic)
+        user.save()
+        # Save updates
+        return redirect('naiveusers', user_id=user.uuid)
+
+    return render(request, 'edit_user.html', {'user': user})
+
+def change_password(request,user_id):
+    user=get_object_or_404(user_model.bear,uuid=user_id)
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password')
+        new_user=check(user.username,old_password)
+    if new_user is None:
+        return JsonResponse('error')
+    else:
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        if new_password != confirm_password:
+            return JsonResponse('error')
+        else:
+            user.password = hashed(new_password)
+    return render(request,'change_password.html',user_id=user.uuid)
