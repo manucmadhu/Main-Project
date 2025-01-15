@@ -21,6 +21,7 @@ class bear(models.Model):
     profile_pic = models.CharField(max_length=500, blank=True, null=True)
     email = models.EmailField(max_length=255, blank=True, null=True,unique=True)
     current_usage = models.IntegerField(default=0, blank=True, null=True)
+    past_usage =models.IntegerField(default=0,blank=True ,null=True)
     avg_usage = models.IntegerField(default=0, blank=True, null=True)
     bill_amount = models.IntegerField(default=0, blank=True, null=True)
     pending = models.IntegerField(default=0, blank=True, null=True)
@@ -54,7 +55,7 @@ class generator(models.Model):
 class section(models.Model):
     uuid = models.CharField(primary_key=True, max_length=50)
     activity_status = models.BooleanField(default=True)
-    grids = models.IntegerField(default=0)
+    grids = models.CharField(max_length=50)
     users = models.IntegerField(default=0)
     load = models.FloatField(default=0)
     max_load=models.IntegerField(default=0)

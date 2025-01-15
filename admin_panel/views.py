@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from users import models as user_model
-from django.db.models import F
+from django.db.models import F,Sum
 # Create your views here.
 from django.http import JsonResponse
 
@@ -25,11 +25,15 @@ def update_section(request, section_id):
     if request.method == 'POST':
         # Update fields with data from the form
         activity_status = request.POST.get('activity_status', 'off')  # Default to 'off' if not provided
-        section.grids = request.POST.get('grids', section.grids)
+        # section.grids = request.POST.get('grids', section.grids)
         section.users = int(request.POST.get('users', section.users))  # Convert to int
-        section.load = int(request.POST.get('load', section.load))  # Convert to int
+        # section.load = int(request.POST.get('load', section.load))  # Convert to int
         section.max_load = int(request.POST.get('max_load', section.max_load))  # Convert to int
+        section.users=user_model.bear.objects.filter(section=section.uuid).count()
+        total_usage_difference = user_model.bear.objects.filter(section=section.uuid).annotate(usage_diff=F('current_usage') - F('past_usage')).aggregate(total_usage_diff=Sum('usage_diff'))['total_usage_diff']
 
+# Assign the calculated value to the section's load
+        section.load = total_usage_difference if total_usage_difference is not None else 0
         # Logic for updating activity status and related fields
         if activity_status.lower() == 'off':
             section.activity_status = False
@@ -89,10 +93,12 @@ def update_generator(request, generator_id):
         grid1 = request.POST.get('grid1',generator.grid1)
         grid2 = request.POST.get('grid2',generator.grid2)
         if generator.grid1 != grid1 :
+            grid_off(grid1)
             newgrid=get_object_or_404(user_model.grid,uuid=grid1)
             generator.grid1=grid1
             generator.grid1power=newgrid.load
         if generator.grid2 != grid2 :
+            grid_off(grid2)
             newgrid=get_object_or_404(user_model.grid,uuid=grid2)
             generator.grid2=grid2
             generator.grid2power=newgrid.load
