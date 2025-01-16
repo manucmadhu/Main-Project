@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect ,get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -18,12 +18,15 @@ def login_view(request):
         if user:
             login(request, user)
             if user.is_superuser:
-                return render(request,'admin_panel.html')
+                return redirect('admin_panel',user_id=user.uuid)
             else :
                 return render(request,'dashboard.html')
         return JsonResponse({"status": "failure", "message": "Invalid credentials"})
     return render(request, 'login.html')
-
+def admin_view(request,user_id):
+    user=get_object_or_404(User,uuid=user_id)
+    # user=request.POST('user_id',user.uuid)
+    return render(request,'admin_panel.html',{'user':user})
 def logout_view(request):
     logout(request)
     return redirect('login')

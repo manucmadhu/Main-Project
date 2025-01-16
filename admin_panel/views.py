@@ -17,7 +17,7 @@ def manage_generators(request):
 
 def view_section(request, section_id):
     section = get_object_or_404(user_model.section, uuid=section_id)
-    return render(request, 'sections.html',section_id=section.uuid)
+    return render(request, 'sections.html', {'section': section})
 
 
 def update_section(request, section_id):
@@ -83,11 +83,11 @@ def sec_on(section_id):
 def view_generator(request,generator_id):
     generator = None
     generator_id = request.GET.get('generator_id', None)  # Get generator_id from query parameter
-
+    user=request.user
     if generator_id:
         generator = get_object_or_404(user_model.generator, uuid=generator_id)
 
-    return render(request, 'generators.html', {'generator': generator})
+    return render(request, 'generators.html', {'generator': generator,'user':user})
 
 def update_generator(request, generator_id):
     generator = get_object_or_404(user_model.generator, uuid=generator_id)
@@ -180,8 +180,9 @@ def view_grid(request,grid_id):
 
     if grid_id:
         grid = get_object_or_404(user_model.grid, uuid=grid_id)
+        
 
-    return render(request, 'grid.html',grid_id=grid.uuid)
+    return render(request, 'grid.html',{'grid':grid})
 
 def update_grid(request, grid_id):
     grid = get_object_or_404(user_model.grid, uuid=grid_id)
@@ -236,7 +237,7 @@ def send_error_message(user_id,start,end):
 
 def view_user(request,user_id):
     user=get_object_or_404(user_model.bear,uuid=user_id)
-    return redirect('users.html',user_id=user.uuid)
+    return redirect('users.html',{'user':user})
 
 def update_user(request,user_id):
     user = get_object_or_404(user_model.bear, uuid=user_id)

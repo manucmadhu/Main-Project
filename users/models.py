@@ -7,6 +7,7 @@ class User(AbstractUser):
         ('user', 'User'),
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES,)
+    uuid=models.CharField(max_length=50,default=0)
 class bear(models.Model):
     ROLE_CHOICES = [
         ('admin', 'Admin'),

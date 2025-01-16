@@ -8,6 +8,7 @@ urlpatterns = [
     path('logout/', user_views.login_view, name='logout'),
     path('', user_views.cauthenticate, name='authenticate'),
     path('ad',user_views.login_view,name='login'),
+    path('admin_panel/<int:user_id>',user_views.admin_view,name='admin_panel'),
     path('dash',dashboard_views.dashboard_view, name='dashboard'),
     path('chatbot/', include('chatbot.urls')),
     path('notifications/', include('notifications.urls')),
