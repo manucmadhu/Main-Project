@@ -44,8 +44,12 @@ def update_section(request, section_id):
             section.users = 0
             section.load = 0
             section.grids = None
+            sec_off(section_id=section.uuid)
         else:
+            if section.activity_status is False:
+                sec_on(section_id)
             section.activity_status = True
+            
 
         # Ensure consistency between load, max_load, and users
         if section.users == 0:
@@ -68,6 +72,13 @@ def update_section(request, section_id):
 
     return render(request, 'update_sections.html', {'section': section})
 
+def sec_on(section_id):
+    section=get_object_or_404(user_model.section_id,uuid=section_id)
+    for user in user_model.bear.objects.filter(section=section.uuid):
+        user_on(user_id=user.uuid)
+    section.activity_status=True
+    section.save()
+    return
 
 def view_generator(request,generator_id):
     generator = None
@@ -214,6 +225,9 @@ def sec_off(section_id):
     section=get_object_or_404(user_model.section_id,uuid=section_id)
     for user in user_model.bear.objects.filter(section=section.uuid):
         send_error_message(user.uuid,now(),now()+timedelta(hours=2))
+        user_off(user_id=user.uuid)
+    section.activity_status=False
+    section.save()
     return
 
 def send_error_message(user_id,start,end):
@@ -249,13 +263,24 @@ def update_user(request,user_id):
 
 def user_off(user_id):
     send_error_message(user_id,now(),now()+timedelta(hours=2))
+    user=get_object_or_404(user_model.bear,uuid=user_id)
+    user.activity_status=False
+    user.save()
     return
 
 def show_user(request,user_id):
     user=get_object_or_404(user_model.bear,uuid=user_id)
     return redirect('naiveusers.html',user_id=user.uuid)
 
+def user_on(user_id):
+    send_restore_message(user_id,now(),now()+timedelta(hours=2))
+    user=get_object_or_404(user_model.bear,uuid=user_id)
+    user.activity_status=True
+    user.save()
+    return
 
+def send_restore_message(user_id):
+    return
 def edit_user(request,user_id):
     user = get_object_or_404(user_model.bear, uuid=user_id)
 
