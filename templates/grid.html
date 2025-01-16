@@ -30,9 +30,10 @@
                 <a href="{% url 'update_grid' grid_id=grid.uuid %}">Edit Grid</a>
             </div>
         {% else %}
+        
             <p>No Grid found. Please enter a valid Grid ID.</p>
         {% endif %}
-
+        <a href="/admin_panel/{{user.uuid}}">Go to Admin Panel</a>
         <footer>
             <p>&copy; 2025 Power Grid Management</p>
         </footer>

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1>Power Grid Management</h1>
+        <div class="welcome">
+            <p>Welcome, Admin</p>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+
+        <h2>Users</h2>
+
+        <!-- Section ID Input Form -->
+        <form method="GET" action="{% url 'view_user' user_id=1 %}">
+            <label for="user_id">Enter User ID: </label>
+            <input type="text" id="user_id" name="user_id" required>
+            <button type="submit">View User</button>
+        </form>
+
+        <!-- Display Section Details -->
+        {% if bear %}
+            <div class="user-details">
+                <h3>User Details</h3>
+                <p><strong>Name:</strong> {{ bear.name }}</p>
+                <p><strong>User Name:</strong> {{ bear.user_name }}</p>
+                <p><strong>Status:</strong> {{ bear.activity_status }}</p>
+                <p><strong>email:</strong> {{ bear.email }}</p>
+                <p><strong>Current Usage:</strong> {{ bear.current_usage }}</p>
+                <p><strong>Bill Amount:</strong> {{ bear.bill_amount }}</p>
+
+
+                <a href="{% url 'update_user' user_id=bear.uuid %}">Edit User</a>
+            </div>
+        {% else %}
+        
+            <p>No User found. Please enter a valid Grid ID.</p>
+        {% endif %}
+        <a href="/admin_panel/{{user.uuid}}">Go to Admin Panel</a>
+        <footer>
+            <p>&copy; 2025 Power Grid Management</p>
+        </footer>
+    </div>
+{% endblock %}

@@ -14,6 +14,8 @@ urlpatterns = [
     path('sections/<int:section_id>', admin_views.view_section, name='view_section'), 
     path('sections/<str:section_id>/update/', admin_views.update_section, name='update_section'),
     path('grids/<int:grid_id>', admin_views.view_grid, name='view_grid'), 
-        path('admin_panel/<int:user_id>',user_views.admin_view,name='admin_panel'),
+    path('admin_panel/<int:user_id>',user_views.admin_view,name='admin_panel'),
     path('grids/<str:grid_id>/update/', admin_views.update_grid, name='update_grid'),
+    path('users/<int:user_id>',admin_views.view_user,name='view_user'),
+    path('users/<str:user_id>/update/', admin_views.update_user, name='update_user'),
 ]   

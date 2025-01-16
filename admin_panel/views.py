@@ -17,7 +17,8 @@ def manage_generators(request):
 
 def view_section(request, section_id):
     section = get_object_or_404(user_model.section, uuid=section_id)
-    return render(request, 'sections.html', {'section': section})
+    user=request.user
+    return render(request, 'sections.html', {'section': section,'user':user})
 
 
 def update_section(request, section_id):
@@ -180,9 +181,9 @@ def view_grid(request,grid_id):
 
     if grid_id:
         grid = get_object_or_404(user_model.grid, uuid=grid_id)
-        
+    user=request.user
 
-    return render(request, 'grid.html',{'grid':grid})
+    return render(request, 'grid.html',{'grid':grid,'user':user})
 
 def update_grid(request, grid_id):
     grid = get_object_or_404(user_model.grid, uuid=grid_id)
@@ -237,7 +238,7 @@ def send_error_message(user_id,start,end):
 
 def view_user(request,user_id):
     user=get_object_or_404(user_model.bear,uuid=user_id)
-    return redirect('users.html',{'user':user})
+    return render(request,'users.html',{'bear':user})
 
 def update_user(request,user_id):
     user = get_object_or_404(user_model.bear, uuid=user_id)
@@ -258,9 +259,9 @@ def update_user(request,user_id):
         user.bill_amount=request.POST.get('bill_amount',user.bill_amount)
         user.save()
         # Save updates
-        return redirect('view_user', user_id=user.uuid)
+        return redirect('view_user',{'user':user})
 
-    return render(request, 'update_user.html', {'user': user})
+    return render(request, 'update_user.html', {'bear': user})
 
 def user_off(user_id):
     send_error_message(user_id,now(),now()+timedelta(hours=2))
@@ -269,7 +270,7 @@ def user_off(user_id):
     user.save()
     return
 
-def show_user(request,user_id):
+def show_user(request,user_id):#for the actual user to see his details
     user=get_object_or_404(user_model.bear,uuid=user_id)
     return redirect('naiveusers.html',user_id=user.uuid)
 
