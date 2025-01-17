@@ -255,11 +255,21 @@ def update_user(request,user_id):
         user.username=request.POST.get('user_name',user.username)
         user.email=request.POST.get('user_email',user.email)
         user.name=request.POST.get('name',user.name)
-        user.section=request.POST.get('section',user.section)
+        section_id=request.POST.get('section',user.section)
+        if user.section!= section_id:
+            section=get_object_or_404(user_model.section,uuid=section_id)
+            section.load+=user.load
+            if section.load>section.max_load:
+                return JsonResponse("error Section load exceeded")
+            else:
+                section.save()
         user.bill_amount=request.POST.get('bill_amount',user.bill_amount)
+        bill=get_object_or_404(user_model.bill,user=user.uuid)
+        bill.pending_amount=user.bill_amount
+        bill.save()
         user.save()
         # Save updates
-        return redirect('view_user',{'user':user})
+        return redirect('view_user',user_id=user.uuid)
 
     return render(request, 'update_user.html', {'bear': user})
 
