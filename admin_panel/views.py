@@ -285,13 +285,13 @@ def show_user(request,user_id):#for the actual user to see his details
     return redirect('naiveusers.html',user_id=user.uuid)
 
 def user_on(user_id):
-    send_restore_message(user_id,now(),now()+timedelta(hours=2))
+    send_restore_message(user_id,now())
     user=get_object_or_404(user_model.bear,uuid=user_id)
     user.activity_status=True
     user.save()
     return
 
-def send_restore_message(user_id):
+def send_restore_message(user_id,time):
     return
 def edit_user(request,user_id):
     user = get_object_or_404(user_model.bear, uuid=user_id)
@@ -327,7 +327,19 @@ def change_password(request,user_id):
 from users.models import Schedule
 def show_maintenance(request):
     # Fetch the 5 most recent maintenance records
-    recent_maintenances = Schedule.objects.all().order_by('-start_time')[:5]
+    recent_maintenances = Schedule.objects.all().order_by('-start_time').filter(completed=False)
 
     # Pass the records to the template context
     return render(request, 'show_maintenance.html', {'maintenances': recent_maintenances})
+
+def update_maintenance(request,obj):
+    return
+def make_maintenance(request,id):
+    Schedule=get_object_or_404(user_model.Schedule,uuid=id)
+    if request.method == 'POST':   
+        Schedule.completed=request.POST.get(Schedule.completed)
+        Schedule.act_cost=request.POST.get(Schedule.act_cost)
+        Schedule.end_time=now()
+        Schedule.save()
+        return redirect('maintenances',)
+    return render(request,'update_maintenance',{'Schedule':Schedule})

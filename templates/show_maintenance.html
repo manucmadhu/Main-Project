@@ -6,11 +6,13 @@
         {% for maintenance in maintenances %}
             <li>
                 <strong>Object:</strong> {{ maintenance.obj }}<br>
+                <strong>Uid:</strong> {{ maintenance.uuid }}<br>
                 <strong>Start Time:</strong> {{ maintenance.start_time|date:"Y-m-d H:i:s" }}<br>
                 <strong>End Time:</strong> {{ maintenance.end_time|date:"Y-m-d H:i:s" }}<br>
                 <strong>Estimated Cost:</strong> {{ maintenance.est_cost }}<br>
                 <strong>Actual Cost:</strong> {{ maintenance.act_cost }}<br>
                 <strong>Completed:</strong> {{ maintenance.completed|yesno:"Yes,No" }}
+                {% comment %} <a href="{% url 'update_maintenance' obj=maintenance.obj,id=maintenance.uuid %}">update</a> {% endcomment %}
             </li>
         {% empty %}
             <p>No maintenance records found.</p>
