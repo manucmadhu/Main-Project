@@ -18,4 +18,5 @@ urlpatterns = [
     path('grids/<str:grid_id>/update/', admin_views.update_grid, name='update_grid'),
     path('users/<int:user_id>',admin_views.view_user,name='view_user'),
     path('users/<str:user_id>/update/', admin_views.update_user, name='update_user'),
-]   
+   path('maintenances/', admin_views.show_maintenance, name='show_maintenance'),
+]

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Recent Maintenances</h1>
+    <ul>
+        {% for maintenance in maintenances %}
+            <li>
+                <strong>Object:</strong> {{ maintenance.obj }}<br>
+                <strong>Start Time:</strong> {{ maintenance.start_time|date:"Y-m-d H:i:s" }}<br>
+                <strong>End Time:</strong> {{ maintenance.end_time|date:"Y-m-d H:i:s" }}<br>
+                <strong>Estimated Cost:</strong> {{ maintenance.est_cost }}<br>
+                <strong>Actual Cost:</strong> {{ maintenance.act_cost }}<br>
+                <strong>Completed:</strong> {{ maintenance.completed|yesno:"Yes,No" }}
+            </li>
+        {% empty %}
+            <p>No maintenance records found.</p>
+        {% endfor %}
+    </ul>
+{% endblock %}

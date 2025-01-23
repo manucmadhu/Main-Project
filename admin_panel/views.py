@@ -324,3 +324,10 @@ def change_password(request,user_id):
         else:
             user.password = hashed(new_password)
     return render(request,'change_password.html',user_id=user.uuid)
+from users.models import Schedule
+def show_maintenance(request):
+    # Fetch the 5 most recent maintenance records
+    recent_maintenances = Schedule.objects.all().order_by('-start_time')[:5]
+
+    # Pass the records to the template context
+    return render(request, 'show_maintenance.html', {'maintenances': recent_maintenances})

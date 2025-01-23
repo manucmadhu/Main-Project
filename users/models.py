@@ -78,3 +78,12 @@ class bill(models.Model):
     pending_amount=models.FloatField(default=0.0)
 
 # user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)  # Assuming '1' is a valid default User
+
+class Schedule(models.Model):
+    uuid=models.CharField(max_length=50,default=0)
+    obj=models.CharField(max_length=100,null=True)
+    start_time = models.DateTimeField(null=True)
+    end_time=models.DateTimeField(null=True)
+    est_cost=models.FloatField(default=0)
+    act_cost=models.FloatField(default=0)
+    completed=models.BooleanField(default=False)
