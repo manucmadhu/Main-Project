@@ -332,9 +332,17 @@ def show_maintenance(request):
     # Pass the records to the template context
     return render(request, 'show_maintenance.html', {'maintenances': recent_maintenances})
 
-def update_maintenance(request,obj):
-    return
-def make_maintenance(request,id):
+def make_maintenance(request,obj):  #front end not created
+    if request.method == 'POST':    
+        id=request.GET.get('uuid')
+        start_time=request.GET.get('start_time')
+        end_time=request.GET.get('end_time')
+        estimated_cost=request.GET.get('estimated_cost')
+        user_model.Schedule.create(uuid=id,start_time=start_time,end_time=end_time,estimated_cost=estimated_cost,completed=False)
+        return redirect('update_maintenance',{'uuid':id})
+    return render(request,'make_maintenance',{'Object':obj})
+
+def update_maintenance(request,id): #front end not created
     Schedule=get_object_or_404(user_model.Schedule,uuid=id)
     if request.method == 'POST':   
         Schedule.completed=request.POST.get(Schedule.completed)
