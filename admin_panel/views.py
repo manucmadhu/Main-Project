@@ -4,7 +4,7 @@ from users.views import check,hashed
 from django.db.models import F,Sum
 # Create your views here.
 from django.http import JsonResponse
-
+from datetime import datetime
 def manage_generators(request):
     data = {
         'generators': [
@@ -342,12 +342,35 @@ def make_maintenance(request,obj):  #front end not created
         return redirect('update_maintenance',{'uuid':id})
     return render(request,'make_maintenance',{'Object':obj})
 
-def update_maintenance(request,id): #front end not created
-    Schedule=get_object_or_404(user_model.Schedule,uuid=id)
-    if request.method == 'POST':   
-        Schedule.completed=request.POST.get(Schedule.completed)
-        Schedule.act_cost=request.POST.get(Schedule.act_cost)
-        Schedule.end_time=now()
+
+def update_maintenance(request, id):
+    Schedule = get_object_or_404(user_model.Schedule, uuid=id)
+
+    if request.method == 'POST':
+        # Handle the 'completed' checkbox
+        completed = request.POST.get('completed', 'off')
+        Schedule.completed = True if completed == 'on' else False
+
+        # Handle 'act_cost' field
+        act_cost = request.POST.get('act_cost')
+        Schedule.act_cost = float(act_cost)
+        if Schedule.act_cost==0 and Schedule.completed:
+            Schedule.act_cost=Schedule.est_cost
+
+        # Handle 'end_time' field
+        end_time = request.POST.get('end_time')
+        if Schedule.completed:
+            # Set the current time as the end time if completed
+            Schedule.end_time = now()
+        elif end_time:
+            try:
+                # Parse the datetime-local format from the form
+                Schedule.end_time = datetime.strptime(end_time, '%Y-%m-%dT%H:%M')
+            except ValueError:
+                Schedule.end_time = None  # Handle invalid datetime input gracefully
+
+        # Save the updated schedule
         Schedule.save()
-        return redirect('maintenances',)
-    return render(request,'update_maintenance',{'Schedule':Schedule})
+        return redirect('show_maintenance')  # Redirect to the maintenances page
+
+    return render(request, 'update_maintenance.html', {'Schedule': Schedule})

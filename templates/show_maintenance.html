@@ -12,7 +12,8 @@
                 <strong>Estimated Cost:</strong> {{ maintenance.est_cost }}<br>
                 <strong>Actual Cost:</strong> {{ maintenance.act_cost }}<br>
                 <strong>Completed:</strong> {{ maintenance.completed|yesno:"Yes,No" }}
-                {% comment %} <a href="{% url 'update_maintenance' obj=maintenance.obj,id=maintenance.uuid %}">update</a> {% endcomment %}
+                <a href="{% url 'update_maintenance' maintenance.uuid %}">update</a>
+
             </li>
         {% empty %}
             <p>No maintenance records found.</p>
