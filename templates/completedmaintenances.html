@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Recent Maintenances</h1>
+    <h1>Completed Maintenances</h1>
     <ul>
-        {% for maintenance in maintenances %}
+        {% for maintenance in completedmaintenances %}
             <li>
                 <strong>Object:</strong> {{ maintenance.obj }}<br>
                 <strong>Uid:</strong> {{ maintenance.uuid }}<br>
@@ -12,12 +12,11 @@
                 <strong>Estimated Cost:</strong> {{ maintenance.est_cost }}<br>
                 <strong>Actual Cost:</strong> {{ maintenance.act_cost }}<br>
                 <strong>Completed:</strong> {{ maintenance.completed|yesno:"Yes,No" }}
-                <a href="{% url 'update_maintenance' maintenance.uuid %}">update</a>
+                {% comment %} <a href="{% url 'update_maintenance' maintenance.uuid %}">update</a> {% endcomment %}
 
             </li>
         {% empty %}
             <p>No maintenance records found.</p>
         {% endfor %}
     </ul>
-    <a href="{% url 'completedmaintenances' %}">Completed Maintenances</a>
 {% endblock %}

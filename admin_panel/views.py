@@ -327,11 +327,16 @@ def change_password(request,user_id):
 from users.models import Schedule
 def show_maintenance(request):
     # Fetch the 5 most recent maintenance records
-    recent_maintenances = Schedule.objects.all().order_by('-start_time')#.filter(completed=False)
+    recent_maintenances = Schedule.objects.all().order_by('-start_time').filter(completed=False)
 
     # Pass the records to the template context
     return render(request, 'show_maintenance.html', {'maintenances': recent_maintenances})
+def completed_maintenance(request):
+    # Fetch the 5 most recent maintenance records
+    completed_maintenance = Schedule.objects.all().order_by('-start_time').filter(completed=True)
 
+    # Pass the records to the template context
+    return render(request, 'completedmaintenances.html', {'completedmaintenances': completed_maintenance})
 def make_maintenance(request,obj):  #front end not created
     if request.method == 'POST':    
         id=request.POST.get('uid')
