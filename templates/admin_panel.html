@@ -97,13 +97,13 @@
         <div class="card text-white bg-success mb-3">
             <div class="card-header">Schedule Maintenance</div>
             <div class="card-body">
-                <a href="#" class="btn btn-light">Sections</a>
+                <a href="{% url 'make_maintenance' 'section' %}" class="btn btn-light">Sections</a>
                 <p> </p>
-                <a href="#" class="btn btn-light">Grids</a>
+                <a href="{% url 'make_maintenance' 'grid' %}" class="btn btn-light">Grids</a>
                 <p> </p>
-                <a href="#" class="btn btn-light">Users</a>
+                <a href="{% url 'make_maintenance' 'user' %}" class="btn btn-light">Users</a>
                 <p> </p>
-                <a href="#" class="btn btn-light">Generators</a>
+                <a href="{% url 'make_maintenance' 'generator' %}" class="btn btn-light">Generators</a>
             </div>
         </div>
     </div>

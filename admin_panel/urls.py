@@ -16,4 +16,5 @@ urlpatterns = [
     path('users/<str:user_id>/update/', views.update_user, name='update_user'),
     path('maintenances/', views.show_maintenance, name='show_maintenance'),
     path('maintenances/<int:id>/update', views.update_maintenance, name='update_maintenance'),
+    path('make_maintenance/<str:obj>', views.make_maintenance, name='make_maintenance'),
 ]

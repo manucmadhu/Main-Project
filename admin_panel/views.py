@@ -327,20 +327,21 @@ def change_password(request,user_id):
 from users.models import Schedule
 def show_maintenance(request):
     # Fetch the 5 most recent maintenance records
-    recent_maintenances = Schedule.objects.all().order_by('-start_time').filter(completed=False)
+    recent_maintenances = Schedule.objects.all().order_by('-start_time')#.filter(completed=False)
 
     # Pass the records to the template context
     return render(request, 'show_maintenance.html', {'maintenances': recent_maintenances})
 
 def make_maintenance(request,obj):  #front end not created
     if request.method == 'POST':    
-        id=request.GET.get('uuid')
-        start_time=request.GET.get('start_time')
-        end_time=request.GET.get('end_time')
-        estimated_cost=request.GET.get('estimated_cost')
-        user_model.Schedule.create(uuid=id,start_time=start_time,end_time=end_time,estimated_cost=estimated_cost,completed=False)
-        return redirect('update_maintenance',{'uuid':id})
-    return render(request,'make_maintenance',{'Object':obj})
+        id=request.POST.get('uid')
+        start_time=request.POST.get('start_time')
+        end_time=request.POST.get('end_time')
+        estimated_cost=request.POST.get('est_cost')
+        user_model.Schedule(uuid=id,obj=obj,start_time=start_time,end_time=end_time,est_cost=estimated_cost,completed=False).save()
+        return redirect('show_maintenance')
+    return render(request, 'make_maintenance.html', {'Object': obj})
+
 
 
 def update_maintenance(request, id):
@@ -349,8 +350,10 @@ def update_maintenance(request, id):
     if request.method == 'POST':
         # Handle the 'completed' checkbox
         completed = request.POST.get('completed', 'off')
-        Schedule.completed = True if completed == 'on' else False
-
+        if completed == 'on':
+            Schedule.completed = True
+        else:
+            Schedule.completed = False
         # Handle 'act_cost' field
         act_cost = request.POST.get('act_cost')
         Schedule.act_cost = float(act_cost)
