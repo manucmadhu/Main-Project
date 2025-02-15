@@ -25,8 +25,8 @@
                 <p><strong>Status:</strong> {{ generator.activity_status }}</p>
                 <p><strong>Power Produced:</strong> {{ generator.current_production }}</p>
                 <p><strong>Peak Capacity:</strong> {{ generator.peak_capacity }}</p>
-                <p><strong>Grid 1:</strong> {{ generator.grid_1 }}</p> 
-                <p><strong>Grid 2:</strong> {{ generator.grid_2}}</p>               
+                {% comment %} <p><strong>Grid 1:</strong> {{ generator.grid_1 }}</p> 
+                <p><strong>Grid 2:</strong> {{ generator.grid_2}}</p>                {% endcomment %}
                 <a href="{% url 'update_generator' generator_id=generator.uuid %}">Edit Generator</a>
             </div>
         {% else %}

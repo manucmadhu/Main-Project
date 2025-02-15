@@ -48,12 +48,17 @@ class generator(models.Model):
     activity_status = models.BooleanField(default=True)
     current_production = models.FloatField(default=0)
     peak_capacity = models.IntegerField(default=0)
-    grid1=models.CharField(max_length=50,default=0)
-    grid2=models.CharField(max_length=50,default=0)
-    grid1power=models.FloatField(default=0.0)
-    grid2power=models.FloatField(default=0.0)
+    # grid1=models.CharField(max_length=50,default=0)
+    # grid2=models.CharField(max_length=50,default=0)
+    # grid1power=models.FloatField(default=0.0)
+    # grid2power=models.FloatField(default=0.0)
     free = models.BooleanField(default=True)
-
+    canserve=models.IntegerField(default=0)
+class serves(models.Model):
+    uuid = models.CharField(primary_key=True, max_length=50)
+    gen_id=models.CharField(max_length=50)
+    grid_id=models.CharField(max_length=50)
+    
 class section(models.Model):
     uuid = models.CharField(primary_key=True, max_length=50)
     activity_status = models.BooleanField(default=True)
