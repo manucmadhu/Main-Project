@@ -2,6 +2,7 @@
 from django.contrib import admin
 from django.urls import path
 from . import views
+from users import views as user_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -18,4 +19,7 @@ urlpatterns = [
     path('maintenances/<int:id>/update', views.update_maintenance, name='update_maintenance'),
     path('make_maintenance/<str:obj>', views.make_maintenance, name='make_maintenance'),
     path('completedmaintenances/', views.completed_maintenance, name='completedmaintenances'),
+    path('powerusage/<int:user_id>',user_views.power_usage,name='powerusage'),
+    path('billpay/<int:user_id>',user_views.bill_collec,name='billpay'),
+    path('payment/process/<str:uuid>/', user_views.process_payment, name='process_payment')
 ]

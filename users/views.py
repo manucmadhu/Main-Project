@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import User, bear  # Corrected capitalization of Bear model
+from .models import User, bear, bill # Corrected capitalization of Bear model
 from django.utils.crypto import salted_hmac
 
 # Constants
@@ -65,12 +65,12 @@ def cauthenticate(request):
         user = check(username, password)
         if user is not None:
             # login(request, user)  # Logs in the user manually
-
+            context = {'user': user}
             # Redirect based on role
             if user.role.lower() == 'admin':
-                return render(request, "admin_panel.html")  # Render admin dashboard
+                return render(request, "admin_panel.html",context)  # Render admin dashboard
             else:
-                return render(request, "dashboard.html")  # Render user dashboard
+                return render(request, "dashboard.html",context)  # Render user dashboard
         else:
             # Add error message for invalid credentials
             messages.error(request, 'Invalid username or password')
@@ -91,3 +91,22 @@ def check(username, password):
 def hashed(password):
     # Securely hash the password using salted_hmac
     return salted_hmac(SALT, password).hexdigest()
+
+def power_usage(request,user_id):
+    user=get_object_or_404(bear,uuid=user_id)
+    
+    return render(request, 'power_usage.html', {'user': user})
+def bill_collec(request,user_id):
+    bill_id=get_object_or_404(bill,user=user_id)
+    # if request.method == "POST":
+    return render(request, 'bill.html', {'bill': bill_id})
+
+def process_payment(request, uuid):
+    try:
+        user_bill = bill.objects.get(uuid=uuid)
+        user_bill.paid = True  # Mark as paid
+        user_bill.pending_amount = 0.0
+        user_bill.save()
+        return redirect('billpay', user_id=uuid)
+    except bill.DoesNotExist:
+        return redirect('dashboard')  # Redirect if bill not found

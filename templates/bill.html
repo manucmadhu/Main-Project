@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Bill Payments{% endblock %}
+
+{% block content %}
+<div class="container-fluid d-flex flex-column align-items-center justify-content-center vh-100">
+    <h2 class="text-center">Bill Payment</h2>
+
+    <!-- Bill Details -->
+    <div class="card p-4 shadow-lg text-center w-50">
+        <h4>User: {{ bill.user }}</h4>
+        <p><strong>Bill ID:</strong> {{ bill.uuid }}</p>
+        <p><strong>Pending Amount:</strong> ₹{{ bill.pending_amount }}</p>
+        <p><strong>Status:</strong> 
+            {% if bill.paid %}
+                <span class="text-success">Paid</span>
+            {% else %}
+                <span class="text-danger">Pending</span>
+            {% endif %}
+        </p>
+
+        {% if not bill.paid %}
+        <!-- Payment Button -->
+        <form method="POST" action="{% url 'process_payment' bill.uuid %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success w-100">Pay Now</button>
+        </form>
+        {% else %}
+        <button class="btn btn-secondary w-100" disabled>Already Paid</button>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

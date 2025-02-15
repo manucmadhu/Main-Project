@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid d-flex flex-column align-items-center justify-content-center vh-100">
+    <h2 class="text-center">Welcome, {{ user.name }}</h2>
+    <p class="text-center">Username: {{ user.username }}</p>
+    <p class="text-center">Email: {{ user.email }}</p>
+    <p class="text-center">Role: {{ user.role }}</p>
+
+    <h3 class="text-center mt-3">Power Usage Statistics</h3>
+    
+    <!-- Graph Container with Fixed Height and No Scroll -->
+    <div class="d-flex justify-content-center align-items-center w-75" style="height: 50vh;">
+        <canvas id="usageChart"></canvas>
+    </div>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Get user statistics from Django template
+    const userStats = {
+        current_usage: {{ user.current_usage }},
+        past_usage: {{ user.past_usage }},
+        avg_usage: {{ user.avg_usage }},
+    };
+
+    // Create the chart
+    const ctx = document.getElementById('usageChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ["Current Usage", "Past Usage", "Avg Usage"],
+            datasets: [{
+                label: "Power Consumption",
+                data: Object.values(userStats),
+                backgroundColor: ["blue", "red", "green"],
+                borderColor: "black",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false, // Allows dynamic resizing
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+{% endblock %}
