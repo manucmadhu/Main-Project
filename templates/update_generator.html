@@ -4,22 +4,27 @@
     <h1>Update Generator</h1>
     <form method="POST">
         {% csrf_token %}
+
         <label for="fuel">Fuel:</label>
         <input type="text" name="fuel" value="{{ generator.fuel }}" required>
 
         <label for="activity_status">Status:</label>
         <input type="checkbox" id="activity_status" name="activity_status" value="on" {% if generator.activity_status %}checked{% endif %}>
-       
 
-        <label for="current_production">Current Production:</label>
-        <input type="number" name="current_production" value="{{ generator.current_production}}" required>
+        <label for="current_production">Current Production (kW):</label>
+        <input type="number" step="0.1" name="current_production" value="{{ generator.current_production }}" required>
 
-        <label for="peak_capacity">Peak Capacity:</label>
+        <label for="peak_capacity">Peak Capacity (kW):</label>
         <input type="number" name="peak_capacity" value="{{ generator.peak_capacity }}" required>
-        <label for="grid_1">Grid 1:</label>
-        <input type="number" name="grid_1" value="{{ generator.grid_1 }}" >
-        <label for="grid_1">Peak Capacity:</label>
-        <input type="number" name="grid_2" value="{{ generator.grid_2 }}">
+
+        <h3>Connected Grids</h3>
+        <ul>
+            {% for grid in served_grids %}
+                <li>Grid ID: {{ grid.grid_id }}</li>
+            {% empty %}
+                <li>No grids assigned</li>
+            {% endfor %}
+        </ul>
 
         <button type="submit">Save Changes</button>
     </form>

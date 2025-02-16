@@ -58,6 +58,7 @@ class serves(models.Model):
     uuid = models.CharField(primary_key=True, max_length=50)
     gen_id=models.CharField(max_length=50)
     grid_id=models.CharField(max_length=50)
+    power_usage=models.FloatField(default=0.0)
     
 class section(models.Model):
     uuid = models.CharField(primary_key=True, max_length=50)

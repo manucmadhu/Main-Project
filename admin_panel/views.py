@@ -80,100 +80,211 @@ def sec_on(section_id):
     section.activity_status=True
     section.save()
     return
+from .forms import AddGridForm, RemoveGridForm  # Import the forms
+# def view_generator(request, generator_id):
+#     user = request.user
+#     generator = get_object_or_404(user_model.generator, uuid=generator_id)
 
-def view_generator(request,generator_id):
-    generator = None
-    generator_id = request.GET.get('generator_id', None)  # Get generator_id from query parameter
-    user=request.user
-    if generator_id:
-        generator = get_object_or_404(user_model.generator, uuid=generator_id)
+#     # Fetch all grids linked to this generator
+#     served_grids = user_model.serves.objects.filter(gen_id=generator.uuid)
 
-    return render(request, 'generators.html', {'generator': generator,'user':user})
+#     if request.method == "POST":
+#         grid_uuid = request.POST.get("grid_uuid")
+
+#         if "add_grid" in request.POST:
+#             if grid_uuid:
+#                 grid = user_model.grid.objects.filter(uuid=grid_uuid).first()
+#                 if grid:
+#                     # ✅ Check if the grid is already linked before inserting
+#                     if not user_model.serves.objects.filter(gen_id=generator.uuid, grid_id=grid.uuid).exists():
+#                         load=grid.load
+#                         if load > generator.peak_capacity-generator.current_production:
+#                             return JsonResponse({"error": "Grid capacity cant be fulfilled by generator"}, status=404)
+#                         last_entry = user_model.serves.objects.last()
+#                         if last_entry and last_entry.uuid:
+#                             try:
+#                              uid = int(last_entry.uuid) + 1
+#                             except ValueError:
+#                                 uid = 1  # Fallback in case of bad data
+#                         else:
+#                             uid = 1  # If table is empty, start with UID 1
+
+#                         user_model.serves.objects.create(gen_id=generator.uuid, grid_id=grid.uuid,uuid=uid,power_usage=grid.load)
+#                         return JsonResponse({"message": "Grid added successfully"}, status=200)
+#                     else:
+#                         return JsonResponse({"error": "Grid already linked!"}, status=400)
+#                 return JsonResponse({"error": "Grid not found"}, status=404)
+
+#         elif "remove_grid" in request.POST:
+#             if grid_uuid:
+#                 old=user_model.serves.objects.filter(gen_id=generator.uuid, grid_id=grid_uuid).first()
+#                 if old is not None:
+#                     grid_load=old.power_usage
+#                     generator.current_production=max(generator.current_production-grid_load,0)
+#                     grid_off(grid.uuid)
+#                     generator.save()
+#                 deleted,_= user_model.serves.objects.filter(gen_id=generator.uuid, grid_id=grid_uuid).delete()
+#                 if deleted:
+#                     return JsonResponse({"message": "Grid removed successfully"}, status=200)
+#                 else:
+#                     return JsonResponse({"error": "Grid not linked to this generator"}, status=400)
+
+#     return render(
+#         request,
+#         "generators.html",
+#         {
+#             "generator": generator,
+#             "user": user,
+#             "served_grids": served_grids,
+#         },
+#     )
+
+def view_generator(request, generator_id):
+    user = request.user
+    generator = get_object_or_404(user_model.generator, uuid=generator_id)
+
+    # Fetch all grids linked to this generator
+    served_grids = user_model.serves.objects.filter(gen_id=generator.uuid)
+
+    if request.method == "POST":
+        grid_uuid = request.POST.get("grid_uuid")
+        
+        if not grid_uuid:
+            return JsonResponse({"error": "Grid UUID is required"}, status=400)
+
+        print(f"📌 Grid UUID Received: {grid_uuid}")  # Debugging
+
+        # 🟢 Adding a Grid
+        if "add_grid" in request.POST:
+            grid = user_model.grid.objects.filter(uuid=grid_uuid).first()
+            
+            if not grid:
+                return JsonResponse({"error": "Grid not found"}, status=404)
+
+            # ✅ Check if grid is already linked
+            if user_model.serves.objects.filter(gen_id=generator.uuid, grid_id=grid.uuid).exists():
+                return JsonResponse({"error": "Grid already linked!"}, status=400)
+
+            # ✅ Ensure generator has enough capacity
+            if grid.load > generator.peak_capacity - generator.current_production:
+                return JsonResponse({"error": "Grid capacity can't be fulfilled by generator"}, status=400)
+
+            # ✅ Assign unique UID
+            last_entry = user_model.serves.objects.last()
+            uid = int(last_entry.uuid) + 1 if last_entry and last_entry.uuid else 1
+
+            # ✅ Create link between generator and grid
+            user_model.serves.objects.create(
+                gen_id=generator.uuid, 
+                grid_id=grid.uuid, 
+                uuid=uid, 
+                power_usage=grid.load
+            )
+
+            return JsonResponse({"message": "Grid added successfully"}, status=200)
+
+        # 🔴 Removing a Grid
+        elif "remove_grid" in request.POST:
+            linked_grid = user_model.serves.objects.filter(gen_id=generator.uuid, grid_id=grid_uuid)
+
+            if not linked_grid.exists():
+                return JsonResponse({"error": "Grid not linked to this generator"}, status=400)
+
+            # Get grid load before deleting
+            grid_load = linked_grid.first().power_usage
+            
+            # ✅ Update generator's current production
+            generator.current_production = max(generator.current_production - grid_load, 0)
+            
+            if generator.current_production==0:
+                generator.is_active = False
+            generator.save()
+            # ✅ Call grid_off function if needed
+            grid_off(grid_uuid)
+
+            # ✅ Delete the link
+            deleted, _ = linked_grid.delete()
+            user_model.serves.objects.filter(gen_id=generator.uuid, grid_id=grid_uuid).first().delete()
+            print(f"✅ Deleted Rows: {deleted}")  # Debugging
+
+            return JsonResponse({"message": "Grid removed successfully"}, status=200)
+
+    return render(
+        request,
+        "generators.html",
+        {
+            "generator": generator,
+            "user": user,
+            "served_grids": served_grids,
+        },
+    )
+
 
 def update_generator(request, generator_id):
     generator = get_object_or_404(user_model.generator, uuid=generator_id)
+    old_status = generator.activity_status  # Store old status
 
     if request.method == 'POST':
-        # Update generator fields with form data
         generator.fuel = request.POST.get('fuel', generator.fuel)
-        if generator.activity_status is True:
-            activity_status = request.POST.get('activity_status','on')
-        else:
-            activity_status = request.POST.get('activity_status','off')
-        if activity_status =="on":
-            generator.activity_status = True
-        else :
-            generator.activity_status = False
         generator.current_production = request.POST.get('current_production', generator.current_production)
         generator.peak_capacity = request.POST.get('peak_capacity', generator.peak_capacity)
-        grid1 = request.POST.get('grid1',generator.grid1)
-        grid2 = request.POST.get('grid2',generator.grid2)
-        if generator.grid1 != grid1 :
-            grid_off(grid1)
-            newgrid=get_object_or_404(user_model.grid,uuid=grid1)
-            generator.grid1=grid1
-            generator.grid1power=newgrid.load
-        if generator.grid2 != grid2 :
-            grid_off(grid2)
-            newgrid=get_object_or_404(user_model.grid,uuid=grid2)
-            generator.grid2=grid2
-            generator.grid2power=newgrid.load
-        if generator.current_production == 0 :
-            generator.activity_status=False
-            generator_off(generator.uuid)
-        if generator.activity_status is False :
-            generator.current_production = 0
-            generator_off(generator.uuid)
-        if generator.current_production >=generator.peak_capacity:
-            generator.current_production=generator.peak_capacity
-            generator.free=False
-        if generator.grid1power>0 and generator.grid2power >0:
-            generator.free=False
-        else:
-            generator.free=True
-        generator.save()
 
-        # Redirect back to the view page after saving
+        # Handle activity_status correctly
+        activity_status = request.POST.get('activity_status')  # Returns 'on' if checked, None if unchecked
+        generator.activity_status = True if activity_status == "on" else False
+        if generator.activity_status is False:
+            generator.current_production=0
+        # Ensure production doesn't exceed peak capacity
+        generator.current_production = min(float(generator.current_production), float(generator.peak_capacity))
+
+        # If production is 0, disable the generator
+        if generator.current_production == 0:
+            generator.activity_status = False
+        # If generator was turned off, trigger generator_off()
+        if old_status and not generator.activity_status:
+            generator_off(generator.uuid)
+
+        generator.save()
         return redirect('view_generator', generator_id=generator.uuid)
 
     return render(request, 'update_generator.html', {'generator': generator})
+from django.db.models import F
 
 def generator_off(generator_id):
     generator = get_object_or_404(user_model.generator, uuid=generator_id)
-    if generator.grid1!=0:
-        free_generator = generator.objects.filter(activity_status=False,peak_capacity__gt=F('current_production') + grid1.load).first()
-        if free_generator is None:
-            grid_off(generator.grid1)
-        if free_generator.grid1 ==0 and generator.grid1!=0 :
-            grid1=get_object_or_404(user_model.grid,uuid=generator.grid1)
-            free_generator.grid1 = grid1.uuid
-            free_generator.grid1power=grid1.load
-            free_generator.current_production+=grid1.load
-        elif free_generator.grid2 ==0 and generator.grid1!=0 :
-            grid1=get_object_or_404(user_model.grid,uuid=generator.grid1)
-            free_generator.grid2 = grid1.uuid
-            free_generator.grid2power=grid1.load
-            free_generator.current_production+=grid1.load
-        generator.save()
-        grid1.save()
-        free_generator.save()
-    elif generator.grid2 !=0 :
-        free_generator = generator.objects.filter(activity_status=False,peak_capacity__gt=F('current_production') + grid2.load).first()
-        if free_generator is None:
-            grid_off(generator.grid2)
-        if free_generator.grid1 == 0 and generator.grid2 != 0 :
-            grid2=get_object_or_404(user_model.grid,uuid=generator.grid2)
-            free_generator.grid1 = grid2.uuid
-            free_generator.current_production+=grid2.load
-        elif free_generator.grid2 ==0 and generator.grid2!=0 :
-            grid1=get_object_or_404(user_model.grid,uuid=generator.grid1)
-            free_generator.grid2 = grid1.uuid
-            free_generator.grid2power=grid1.load
-            free_generator.current_production+=grid1.load
-        generator.save()
-        grid2.save()
-        free_generator.save()
-    return
+
+    # Get all the grids served by this generator
+    served_grids = user_model.serves.objects.filter(gen_id=generator.uuid)
+
+    for serve_entry in served_grids:
+        grid = get_object_or_404(user_model.grid, uuid=serve_entry.grid_id)
+
+        # Find an available generator with enough capacity
+        free_generator = user_model.generator.objects.filter(
+            activity_status=True,
+            free=True,
+            peak_capacity__gte=F('current_production') + grid.load
+        ).first()
+
+        if free_generator:
+            # Reassign the grid to the new generator
+            serve_entry.gen_id = free_generator.uuid
+            serve_entry.save()
+
+            # Update generator's current production
+            free_generator.current_production += grid.load
+            free_generator.save()
+        else:
+            # No available generator, so turn off the grid
+            grid.activity_status = False
+            grid.save()
+
+    # Clear the generator's load and mark it as free
+    generator.current_production = 0
+    generator.activity_status = False
+    generator.free = True
+    generator.save()
+
 
 def view_grid(request,grid_id):
     grid = None
@@ -224,7 +335,7 @@ def grid_off(grid_id):
 from django.utils.timezone import now
 from datetime import timedelta
 def sec_off(section_id):
-    section=get_object_or_404(user_model.section_id,uuid=section_id)
+    section=get_object_or_404(user_model.section,uuid=section_id)
     for user in user_model.bear.objects.filter(section=section.uuid):
         send_error_message(user.uuid,now(),now()+timedelta(hours=2))
         user_off(user_id=user.uuid)

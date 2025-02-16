@@ -4,128 +4,120 @@
 
 {% block content %}
 <h1>Welcome, Admin</h1>
-<p>UUID: {{ user.uuid }}</p>
-
+,<p>uuid={{user.uuid}}</p>
 <div class="row">
     <div class="col-md-4">
         <div class="card text-white bg-primary mb-3">
             <div class="card-header">Generators</div>
+            
             <div class="card-body">
-                <p>Total Generators: {{ total_generators }}</p>
-                <p>Active Generators: {{ active_generators }}</p>
-                <p>Total Power Generated: {{ total_power_generated }} MW</p>
+                <p>Total Generators:12</p>
+                <p>Active Generators: 7</p>
+                <p >Total Power Generated: 15.6Mw</p>
                 <p class="card-text">View and manage Generators.</p>
                 <a href="{% url 'view_generator' generator_id=1 %}" class="btn btn-light">View Generators</a>
+
+                {% comment %} <a href="/generators/1" class="btn btn-light">View Generators</a> {% endcomment %}
             </div>
         </div>
     </div>
-
     <div class="col-md-4">
         <div class="card text-white bg-success mb-3">
             <div class="card-header">Live Users</div>
             <div class="card-body">
-                <p>Total Users: {{ total_users }}</p>
-                <p>Active Users: {{ active_users }}</p>
-                <p>Usage:{{usage}} % </p>
+                <p>Total Users: 150000</p>
+                <p>Active Users: 123456</p>
+                <p >Grid Efficiency: 95.26%</p>
                 <p class="card-text">View and Manage Users.</p>
                 <a href="{% url 'view_user' user_id=1 %}" class="btn btn-light">View Users</a>
             </div>
         </div>
     </div>
-
     <div class="col-md-4">
         <div class="card text-white bg-danger mb-3">
             <div class="card-header">Gross</div>
             <div class="card-body">
-                <p>Total Production: {{ total_production }} MW</p>
-                <p>Total Usage: {{ total_usage }} MW</p>
-                <p>Difference: {{ difference }} MW</p>
+                <p>Total Production: 15.6Mw</p>
+                <p>Total Usage: 15.3Mw</p>
+                <p>Difference: 0.3Mw</p>
                 <p class="card-text">Show Real-Time Statistics</p>
                 <a href="#" class="btn btn-light">Show Stats</a>
             </div>
         </div>
     </div>
-
     <div class="col-md-4">
         <div class="card text-white bg-primary mb-3">
             <div class="card-header">Sections</div>
             <div class="card-body">
-                <p>Total Sections: {{ total_sections }}</p>
-                <p>Active Sections: {{ active_sections }}</p>
-                <p>Section Utlization:{{section_utilization}} %</p>
+                <p>Total Sections: 15</p>
+                <p>Active Sections: 12</p>
+                <p >Power Quality: 95.3%</p>
                 <p class="card-text">View and Manage Sections</p>
                 <a href="{% url 'view_sections' section_id=1 %}" class="btn btn-light">View Sections</a>
             </div>
         </div>
     </div>
-
     <div class="col-md-4">
         <div class="card text-white bg-success mb-3">
             <div class="card-header">Grids</div>
             <div class="card-body">
-                <p>Total Grids: {{ total_grids }}</p>
-                <p>Active Grids: {{ active_grids }}</p>
-                <p>Quality: {{ grid_efficiency}}%</p>
+                <p>Total Grids: 15</p>
+                <p>Active Grids: 12</p>
+                <p>Quality:100%</p>
                 <p class="card-text">View and Manage Grids</p>
-                <a href="{% url 'view_grid' grid_id=1 %}" class="btn btn-light">View Grids</a>
+                <a href={% url 'view_grid' grid_id=1 %} class="btn btn-light">View Grids</a>
             </div>
         </div>
     </div>
-
     <div class="col-md-4">
         <div class="card text-white bg-danger mb-3">
-            <div class="card-header">Notifications</div>
+            <div class="card-header">Industrial</div>
             <div class="card-body">
-                <p>Erorrs: {{errors}} </p>
-                <p>Complaints:{{Complaints}} </p>
-                <p>Resolved:{{resolved}} %</p>
+                <p>Industrial Production: 6.6Mw</p>
+                <p>Industrial Uage: 6.54Mw</p>
+                <p class="card-text">Quality: 99%</p>
                 <p class="card-text">View real-time Statistics.</p>
                 <a href="#" class="btn btn-light">Show Statistics</a>
             </div>
         </div>
     </div>
-
     <div class="col-md-4">
         <div class="card text-white bg-primary mb-3">
             <div class="card-header">Maintenance</div>
             <div class="card-body">
-                <p>Pending Maintenance: {{ pending_maintenance }}</p>
-                <p>Lost Hours: {{ lost_hours }}</p>
-                <p>Lost Revenue: {{ lost_revenue }}</p>
-                <p class="card-text">View and Manage Maintenance</p>
-                <a href="{% url 'show_maintenance' %}" class="btn btn-light">View Schedules</a>
+                <p>Pending Maintenance: 15</p>
+                <p>Lost Hours: 12</p>
+                <p >Lost Revenuw: 1255215</p>
+                <p class="card-text">View and Manage Sections</p>
+                <a href="{% url 'show_maintenance'%}" class="btn btn-light">View Schedules</a>
             </div>
         </div>
     </div>
-
     <div class="col-md-4">
         <div class="card text-white bg-success mb-3">
             <div class="card-header">Schedule Maintenance</div>
             <div class="card-body">
-                <a href="{% url 'make_maintenance' 'section' %}" class="btn btn-light">Sections</a><br>
+                <a href="{% url 'make_maintenance' 'section' %}" class="btn btn-light">Sections</a>
                 <p> </p>
-                <a href="{% url 'make_maintenance' 'grid' %}" class="btn btn-light">Grids</a><br>
+                <a href="{% url 'make_maintenance' 'grid' %}" class="btn btn-light">Grids</a>
                 <p> </p>
-                <a href="{% url 'make_maintenance' 'user' %}" class="btn btn-light">Users</a><br>
+                <a href="{% url 'make_maintenance' 'user' %}" class="btn btn-light">Users</a>
                 <p> </p>
                 <a href="{% url 'make_maintenance' 'generator' %}" class="btn btn-light">Generators</a>
-               
             </div>
         </div>
     </div>
-
     <div class="col-md-4">
         <div class="card text-white bg-danger mb-3">
             <div class="card-header">Maintenance Anticipation</div>
             <div class="card-body">
-                <p>Number of Maintenance: {{ pending_maintenance }}</p>
-                <p>Associated Cost: 6.54 MW</p>
-                <p>Associated Hours: 1202 Hrs</p>
+                <p>Number of Maintenance: 6.6Mw</p>
+                <p>Associated Cost: 6.54Mw</p>
+                <p>Associated Hours: 1202Hrs</p>
                 <p class="card-text">View real-time Statistics.</p>
                 <a href="#" class="btn btn-light">Show Statistics</a>
             </div>
         </div>
     </div>
 </div>
-
 {% endblock %}

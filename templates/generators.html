@@ -1,40 +1,91 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container">
-        <h1>Power Grid Management</h1>
-        <div class="welcome">
-            <p>Welcome, Admin</p>
-            <a href="{% url 'logout' %}">Logout</a>
+<div class="container">
+    <h1>Power Grid Management</h1>
+    <div class="welcome">
+        <p>Welcome, Admin</p>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+    <h2>Generators</h2>
+
+    <!-- Generator ID Input Form -->
+    <form method="GET" action="{% url 'view_generator' generator_id=1 %}">
+        <label for="generator_id">Enter Generator ID: </label>
+        <input type="text" id="generator_id" name="generator_id" required>
+        <button type="submit">View Generator</button>
+    </form>
+
+    <!-- Display Generator Details -->
+    {% if generator %}
+        <div class="generator-details">
+            <h3>Generator Details</h3>
+            <p><strong>Fuel:</strong> {{ generator.fuel }}</p>
+            <p><strong>Status:</strong> {{ generator.activity_status }}</p>
+            <p><strong>Power Produced:</strong> {{ generator.current_production }}</p>
+            <p><strong>Peak Capacity:</strong> {{ generator.peak_capacity }}</p>
+            <a href="{% url 'update_generator' generator_id=generator.uuid %}">Edit Generator</a>
         </div>
 
-        <h2>Generators</h2>
+        <h3>Connected Grids</h3>
+        <ul>
+            {% for grid in served_grids %}
+                <li>{{ grid.grid.name }}</li>
+            {% empty %}
+                <li>No grids connected.</li>
+            {% endfor %}
+        </ul>
 
-        <!-- Generator ID Input Form -->
-        <form method="GET" action=""href="{% url 'view_generator' generator_id=1 %}">
-            <label for="generator_id">Enter Generator ID: </label>
-            <input type="text" id="generator_id" name="generator_id" required>
-            <button type="submit">View Generator</button>
+        <!-- Add Grid Form -->
+        {% comment %} <h3>Add Grid</h3>
+        <form method="POST">
+            {% csrf_token %}
+            {{ add_form.as_p }}
+            <button type="submit" name="add_grid">Add Grid</button>
         </form>
 
-        <!-- Display Generator Details -->
-        {% if generator %}
-            <div class="generator-details">
-                <h3>Generator Details</h3>
-                <p><strong>Fuel:</strong> {{ generator.fuel }}</p>
-                <p><strong>Status:</strong> {{ generator.activity_status }}</p>
-                <p><strong>Power Produced:</strong> {{ generator.current_production }}</p>
-                <p><strong>Peak Capacity:</strong> {{ generator.peak_capacity }}</p>
-                {% comment %} <p><strong>Grid 1:</strong> {{ generator.grid_1 }}</p> 
-                <p><strong>Grid 2:</strong> {{ generator.grid_2}}</p>                {% endcomment %}
-                <a href="{% url 'update_generator' generator_id=generator.uuid %}">Edit Generator</a>
-            </div>
-        {% else %}
-            <p>No generator selected. Please enter a valid generator ID.</p>
-        {% endif %}
-        <a href="/admin_panel/{{user.uuid}}">Go to Admin Panel</a>
-        <footer>
-            <p>&copy; 2025 Power Grid Management</p>
-        </footer>
-    </div>
+        <!-- Remove Grid Form -->
+        <h3>Remove Grid</h3>
+        <form method="POST">
+            {% csrf_token %}
+            {{ remove_form.as_p }}
+            <button type="submit" name="remove_grid">Remove Grid</button>
+        </form> {% endcomment %}
+        <!-- Add Grid Form -->
+<form method="POST">
+    {% csrf_token %}
+    <label for="add_grid_uuid">Enter Grid UUID to Add:</label>
+    <input type="text" id="add_grid_uuid" name="grid_uuid" required>
+    <button type="submit" name="add_grid">Add Grid</button>
+    
+</form>
+
+<!-- Remove Grid Form -->
+<form method="POST">
+    {% csrf_token %}
+    <label for="remove_grid_uuid">Enter Grid UUID to Remove:</label>
+    <input type="text" id="remove_grid_uuid" name="grid_uuid" required>
+    <button type="submit" name="remove_grid">Remove Grid</button>
+</form>
+
+<!-- List Currently Linked Grids -->
+<h4>Linked Grids</h4>
+<ul>
+    {% for grid in served_grids %}
+        <li>Grid UUID: {{ grid.grid_id }}</li>
+    {% empty %}
+        <li>No grids linked to this generator.</li>
+    {% endfor %}
+</ul>
+
+    {% else %}
+        <p>No generator selected. Please enter a valid generator ID.</p>
+    {% endif %}
+
+    <a href="/admin_panel/{{ user.uuid }}">Go to Admin Panel</a>
+    <footer>
+        <p>&copy; 2025 Power Grid Management</p>
+    </footer>
+</div>
 {% endblock %}

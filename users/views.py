@@ -10,23 +10,136 @@ from django.utils.crypto import salted_hmac
 SALT = "thisissalt"  # Replace with a secure, unique salt value
 
 
+# def login_view(request):
+#     if request.method == "POST":
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         user = authenticate(request, username=username, password=password)
+#         if user:
+#             login(request, user)
+#             if user.is_superuser:
+#                 return redirect('admin_panel',user_id=user.uuid)
+#             else :
+#                 return render(request,'dashboard.html')
+#         return JsonResponse({"status": "failure", "message": "Invalid credentials"})
+#     return render(request, 'login.html')
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+from .models import User, bear, generator, section, grid, bill, Schedule
+
 def login_view(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
+
         if user:
             login(request, user)
+            
             if user.is_superuser:
-                return redirect('admin_panel',user_id=user.uuid)
-            else :
-                return render(request,'dashboard.html')
+                # Fetching statistics
+                total_generators = generator.objects.count()
+                active_generators = generator.objects.filter(activity_status=True).count()
+                total_power_generated = sum(gen.current_production for gen in generator.objects.all())
+
+                total_users = bear.objects.count()
+                active_users = bear.objects.filter(activity_status=True).count()
+                
+                total_sections = section.objects.count()
+                active_sections = section.objects.filter(activity_status=True).count()
+
+                total_grids = grid.objects.count()
+                active_grids = grid.objects.filter(activity_status=True).count()
+
+                total_production = total_power_generated
+                total_usage = sum(sec.load for sec in section.objects.all())
+                difference = total_production - total_usage
+
+                pending_maintenance = Schedule.objects.filter(completed=False).count()
+                lost_hours = sum((sch.end_time - sch.start_time).total_seconds() / 3600 for sch in Schedule.objects.filter(completed=False) if sch.end_time and sch.start_time)
+                lost_revenue = sum(sch.est_cost for sch in Schedule.objects.filter(completed=False))
+
+                context = {
+                    "user": user,
+                    "total_generators": total_generators,
+                    "active_generators": active_generators,
+                    "total_power_generated": total_power_generated,
+                    "total_users": total_users,
+                    "active_users": active_users,
+                    "total_sections": total_sections,
+                    "active_sections": active_sections,
+                    "total_grids": total_grids,
+                    "active_grids": active_grids,
+                    "total_production": total_production,
+                    "total_usage": total_usage,
+                    "difference": difference,
+                    "pending_maintenance": pending_maintenance,
+                    "lost_hours": round(lost_hours,2),
+                    "lost_revenue": round(lost_revenue,2),
+                    "grid_efficiency": round(active_grids*100/total_grids,2),
+                    "section_utilization":round(active_sections*100/total_sections),
+                    "usage":round(active_users*100/total_users,2)
+                
+                }
+
+                return render(request, 'admin_panel.html', context)
+
+            else:
+                return render(request, 'dashboard.html')
+
         return JsonResponse({"status": "failure", "message": "Invalid credentials"})
+
     return render(request, 'login.html')
 def admin_view(request,user_id):
     user=get_object_or_404(User,uuid=user_id)
     # user=request.POST('user_id',user.uuid)
-    return render(request,'admin_panel.html',{'user':user})
+    total_generators = generator.objects.count()
+    active_generators = generator.objects.filter(activity_status=True).count()
+    total_power_generated = sum(gen.current_production for gen in generator.objects.all())
+
+    total_users = bear.objects.count()
+    active_users = bear.objects.filter(activity_status=True).count()
+                
+    total_sections = section.objects.count()
+    active_sections = section.objects.filter(activity_status=True).count()
+
+    total_grids = grid.objects.count()
+    active_grids = grid.objects.filter(activity_status=True).count()
+
+    total_production = total_power_generated
+    total_usage = sum(sec.load for sec in section.objects.all())
+    difference = total_production - total_usage
+
+    pending_maintenance = Schedule.objects.filter(completed=False).count()
+    lost_hours = sum((sch.end_time - sch.start_time).total_seconds() / 3600 for sch in Schedule.objects.filter(completed=False) if sch.end_time and sch.start_time)
+    lost_revenue = sum(sch.est_cost for sch in Schedule.objects.filter(completed=False))
+
+    context = {
+                    "user": user,
+                    "total_generators": total_generators,
+                    "active_generators": active_generators,
+                    "total_power_generated": total_power_generated,
+                    "total_users": total_users,
+                    "active_users": active_users,
+                    "total_sections": total_sections,
+                    "active_sections": active_sections,
+                    "total_grids": total_grids,
+                    "active_grids": active_grids,
+                    "total_production": total_production,
+                    "total_usage": total_usage,
+                    "difference": difference,
+                    "pending_maintenance": pending_maintenance,
+                    "lost_hours": round(lost_hours,2),
+                    "lost_revenue": round(lost_revenue,2),
+                    "grid_efficiency": round(active_grids*100/total_grids,2),
+                    "section_utilization":round(active_sections*100/total_sections),
+                    "usage":round(active_users*100/total_users,2)
+                }
+
+    return render(request, 'admin_panel.html', context)
+    # return render(request,'admin_panel.html',{'user':user})
 def logout_view(request):
     logout(request)
     return redirect('login')
