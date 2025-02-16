@@ -28,14 +28,14 @@
             <a href="{% url 'update_generator' generator_id=generator.uuid %}">Edit Generator</a>
         </div>
 
-        <h3>Connected Grids</h3>
+        {% comment %} <h3>Connected Grids</h3>
         <ul>
             {% for grid in served_grids %}
                 <li>{{ grid.grid.name }}</li>
             {% empty %}
                 <li>No grids connected.</li>
             {% endfor %}
-        </ul>
+        </ul> {% endcomment %}
 
         <!-- Add Grid Form -->
         {% comment %} <h3>Add Grid</h3>
@@ -64,8 +64,8 @@
 <!-- Remove Grid Form -->
 <form method="POST">
     {% csrf_token %}
-    <label for="remove_grid_uuid">Enter Grid UUID to Remove:</label>
-    <input type="text" id="remove_grid_uuid" name="grid_uuid" required>
+    <label for="remove_grid">Enter Grid UUID to Remove:</label>
+    <input type="text" id="remove_grid" name="grid_uuid" required>
     <button type="submit" name="remove_grid">Remove Grid</button>
 </form>
 

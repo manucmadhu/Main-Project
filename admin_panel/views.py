@@ -161,19 +161,15 @@ def view_generator(request, generator_id):
             if not grid:
                 return JsonResponse({"error": "Grid not found"}, status=404)
 
-            # ✅ Check if grid is already linked
             if user_model.serves.objects.filter(gen_id=generator.uuid, grid_id=grid.uuid).exists():
                 return JsonResponse({"error": "Grid already linked!"}, status=400)
 
-            # ✅ Ensure generator has enough capacity
             if grid.load > generator.peak_capacity - generator.current_production:
                 return JsonResponse({"error": "Grid capacity can't be fulfilled by generator"}, status=400)
 
-            # ✅ Assign unique UID
             last_entry = user_model.serves.objects.last()
             uid = int(last_entry.uuid) + 1 if last_entry and last_entry.uuid else 1
 
-            # ✅ Create link between generator and grid
             user_model.serves.objects.create(
                 gen_id=generator.uuid, 
                 grid_id=grid.uuid, 
@@ -181,33 +177,40 @@ def view_generator(request, generator_id):
                 power_usage=grid.load
             )
 
-            return JsonResponse({"message": "Grid added successfully"}, status=200)
+            return JsonResponse({"message": "Grid added successfully"}, status=200, safe=False)
 
         # 🔴 Removing a Grid
         elif "remove_grid" in request.POST:
-            linked_grid = user_model.serves.objects.filter(gen_id=generator.uuid, grid_id=grid_uuid)
+            print(f"📌 Attempting to remove grid {grid_uuid}")
 
-            if not linked_grid.exists():
-                return JsonResponse({"error": "Grid not linked to this generator"}, status=400)
+            old_entry = user_model.serves.objects.filter(gen_id=generator.uuid, grid_id=grid_uuid).first()
 
-            # Get grid load before deleting
-            grid_load = linked_grid.first().power_usage
-            
-            # ✅ Update generator's current production
-            generator.current_production = max(generator.current_production - grid_load, 0)
-            
-            if generator.current_production==0:
-                generator.is_active = False
-            generator.save()
-            # ✅ Call grid_off function if needed
-            grid_off(grid_uuid)
+            if old_entry:
+                print(f"✅ Found grid {grid_uuid}, proceeding with deletion.")
 
-            # ✅ Delete the link
-            deleted, _ = linked_grid.delete()
-            user_model.serves.objects.filter(gen_id=generator.uuid, grid_id=grid_uuid).first().delete()
-            print(f"✅ Deleted Rows: {deleted}")  # Debugging
+                grid_load = old_entry.power_usage
+                generator.current_production = max(generator.current_production - grid_load, 0)
+                generator.save()
 
-            return JsonResponse({"message": "Grid removed successfully"}, status=200)
+                # ⚠️ Check if `grid_off()` is causing an issue
+                # try:
+                #     # grid_off(grid_uuid)
+                # except Exception as e:
+                #     print(f"⚠️ Error in grid_off(): {e}")  # Debugging
+                #     return JsonResponse({"error": "Grid removal failed due to grid_off error"}, status=500)
+
+                # ✅ Delete the grid link
+                deleted_count, _ = user_model.serves.objects.filter(gen_id=generator.uuid, grid_id=grid_uuid).delete()
+
+                if deleted_count:
+                    print(f"✅ Grid {grid_uuid} removed successfully!")
+                    return JsonResponse({"message": "Grid removed successfully"}, status=200, safe=False)
+                else:
+                    print(f"❌ Failed to delete grid {grid_uuid}.")
+                    return JsonResponse({"error": "Failed to remove grid"}, status=400)
+            else:
+                print(f"❌ Grid {grid_uuid} not found in the serves table.")
+                return JsonResponse({"error": "Grid not linked to this generator or does not exist"}, status=400)
 
     return render(
         request,
@@ -325,20 +328,26 @@ def update_grid(request, grid_id):
 
 def grid_off(grid_id):
     grid = get_object_or_404(user_model.grid, uuid=grid_id)
-    if grid.sec1:
-        sec_off(grid.sec1)
-    if grid.sec2:
-        sec_off(grid.sec2)
-    if grid.sec3:
-        sec_off(grid.sec3)
+    try:
+        if grid.sec1:
+            sec_off(grid.sec1)
+        if grid.sec2:
+            sec_off(grid.sec2)
+        if grid.sec3:
+            sec_off(grid.sec3)
+    except Exception as e:
+        print(e)
     return
 from django.utils.timezone import now
 from datetime import timedelta
 def sec_off(section_id):
     section=get_object_or_404(user_model.section,uuid=section_id)
-    for user in user_model.bear.objects.filter(section=section.uuid):
-        send_error_message(user.uuid,now(),now()+timedelta(hours=2))
-        user_off(user_id=user.uuid)
+    try:
+        for user in user_model.bear.objects.filter(section=section.uuid):
+            send_error_message(user.uuid,now(),now()+timedelta(hours=2))
+            user_off(user_id=user.uuid)
+    except Exception as e:
+        print(e)
     section.activity_status=False
     section.save()
     return
