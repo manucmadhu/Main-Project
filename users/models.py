@@ -44,14 +44,17 @@ class appliance(models.Model):
 
 class generator(models.Model):
     uuid = models.CharField(primary_key=True, max_length=50)
-    fuel = models.CharField(max_length=3)
+    # fuel = models.CharField(max_length=30)
     activity_status = models.BooleanField(default=True)
     current_production = models.FloatField(default=0)
     peak_capacity = models.IntegerField(default=0)
-    # grid1=models.CharField(max_length=50,default=0)
-    # grid2=models.CharField(max_length=50,default=0)
-    # grid1power=models.FloatField(default=0.0)
-    # grid2power=models.FloatField(default=0.0)
+    
+    generator_type = models.CharField(max_length=20)  # Encoded category
+    efficiency = models.FloatField(default=0.0)
+    fuel_cost = models.FloatField(default=0.0)
+    emissions = models.FloatField(default=0.0)
+    # power_output = models.FloatField(default=0.0)
+    overall_rank = models.IntegerField(null=True, blank=True)  # Store predicted rank
     free = models.BooleanField(default=True)
     canserve=models.IntegerField(default=0)
 class serves(models.Model):

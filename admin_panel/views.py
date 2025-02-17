@@ -193,11 +193,11 @@ def view_generator(request, generator_id):
                 generator.save()
 
                 # ⚠️ Check if `grid_off()` is causing an issue
-                # try:
-                #     # grid_off(grid_uuid)
-                # except Exception as e:
-                #     print(f"⚠️ Error in grid_off(): {e}")  # Debugging
-                #     return JsonResponse({"error": "Grid removal failed due to grid_off error"}, status=500)
+                try:
+                    grid_off(grid_uuid)
+                except Exception as e:
+                    print(f"⚠️ Error in grid_off(): {e}")  # Debugging
+                    return JsonResponse({"error": "Grid removal failed due to grid_off error"}, status=500)
 
                 # ✅ Delete the grid link
                 deleted_count, _ = user_model.serves.objects.filter(gen_id=generator.uuid, grid_id=grid_uuid).delete()
