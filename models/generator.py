@@ -1,32 +1,23 @@
-import pandas as pd
 import joblib
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestRegressor  # Example model
 
 # Load dataset
-df = pd.read_csv("models/generator_ranking_dataset.csv")
+df = pd.read_csv("models\generator_ranking_dataset.csv")
 
-# Encode categorical variables
-df["Generator_Type"] = df["Generator_Type"].astype("category").cat.codes
-
-# Features (X) and Target (y)
-X = df.drop(columns=["Generator_ID", "Overall_Rank"])
-y = df["Overall_Rank"].astype(int)
-
-# Train-test split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Encode categorical data
+label_encoder = LabelEncoder()
+df["Generator_Type"] = label_encoder.fit_transform(df["Generator_Type"])
 
 # Train model
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
+X = df.drop(columns=["Overall_Rank"])  # Features
+y = df["Overall_Rank"]  # Target
 
-# Evaluate performance
-y_pred = model.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
-print(f"Model Accuracy: {accuracy * 100:.2f}%")
+model = RandomForestRegressor()
+model.fit(X, y)
 
-# Save model in a common location
-joblib.dump(model, "models/generator_ranking_model.pkl")  # Save inside 'models/' directory
-
-print("Model trained and saved successfully!")
+# Save model & encoder
+joblib.dump(model, "generator_ranking_model.pkl")
+joblib.dump(label_encoder, "generator_encoder.pkl")
+joblib.dump(list(X.columns), "feature_names.pkl")  # Save feature names

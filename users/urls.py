@@ -23,4 +23,5 @@ urlpatterns = [
    path('powerusage/<int:user_id>',views.power_usage,name='powerusage'),
    path('billpay/<int:user_id>',views.bill_collec,name='billpay'),
    path('payment/process/<str:uuid>/', views.process_payment, name='process_payment'),
+   path("rankings/", admin_views.rankings, name="rankings")
 ]

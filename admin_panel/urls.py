@@ -21,5 +21,6 @@ urlpatterns = [
     path('completedmaintenances/', views.completed_maintenance, name='completedmaintenances'),
     path('powerusage/<int:user_id>',user_views.power_usage,name='powerusage'),
     path('billpay/<int:user_id>',user_views.bill_collec,name='billpay'),
-    path('payment/process/<str:uuid>/', user_views.process_payment, name='process_payment')
+    path('payment/process/<str:uuid>/', user_views.process_payment, name='process_payment'),
+    path("rankings/", views.rankings, name="rankings")
 ]
