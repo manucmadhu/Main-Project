@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Rankings</title>
+    <title>Generator Rankings & User Anomalies</title>
     <style>
         table { width: 80%; border-collapse: collapse; margin: 20px auto; }
         th, td { border: 1px solid black; padding: 8px; text-align: center; }
@@ -31,6 +31,24 @@
             <td>{{ generator.emissions }}</td>
             <td>{{ generator.current_production }}</td>
             <td><strong>{{ generator.overall_rank }}</strong></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2 style="text-align: center;">User Anomalies</h2>
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Anomaly Score</th>
+        </tr>
+        {% for anomaly in anomalies %}
+        <tr>
+            <td>{{ anomaly.user }}</td>
+            <td>{{ anomaly.anomaly_score }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2">No anomalies detected.</td>
         </tr>
         {% endfor %}
     </table>

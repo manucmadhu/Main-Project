@@ -453,8 +453,8 @@ from django.shortcuts import render
 
 
 # Load the trained model
-MODEL_PATH = "models\generator_ranking_model.pkl"
-FEATURES_PATH = "models/feature_names.pkl"
+MODEL_PATH = "train\generator_ranking_model.pkl"
+FEATURES_PATH = "train/feature_names.pkl"
 
 def load_model():
     """Load the ML model if it exists, else raise an error"""
@@ -497,24 +497,39 @@ if os.path.exists(ENCODER_PATH):
 else:
     label_encoder = LabelEncoder()  # Create a new one if missing
 
+import os
+import joblib
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from users.models import generator  # Import model to avoid circular import issues
+
+MODEL_PATH = "train/isolation_forest_model.pkl"
+FEATURES_PATH = "train/user_features.pkl"
+ENCODER_PATH = "train/user_scaler.pkl"
+
+label_encoder = LabelEncoder()
+
 def update_generator_rankings():
     """Fetches data from the database, predicts rankings, and updates the records."""
-    generators = user_model.generator.objects.all()
+    generators = generator.objects.all()
 
     if not os.path.exists(MODEL_PATH) or not os.path.exists(FEATURES_PATH):
         print("⚠️ Model or feature names file is missing! Train and save the model first.")
         return
 
+    # Load the model and feature names
     model = joblib.load(MODEL_PATH)
     FEATURE_NAMES = joblib.load(FEATURES_PATH)
 
     data = []
     generator_instances = []
 
+    # Collect data from each generator instance
     for gen in generators:
         data.append([gen.generator_type, gen.efficiency, gen.fuel_cost, gen.emissions, gen.current_production])
         generator_instances.append(gen)
 
+    # Create a DataFrame from the collected data
     df = pd.DataFrame(data, columns=["Generator_Type", "Efficiency", "Fuel_Cost", "Emissions", "Power_Output"])
 
     # **Encode the categorical "Generator_Type" column**
@@ -524,22 +539,122 @@ def update_generator_rankings():
 
     # Ensure feature names match the model
     for col in FEATURE_NAMES:
-        if col not in df.columns:
+        if isinstance(col, str) and col not in list(df.columns):
             df[col] = 0  # Add missing columns
 
+    # Reorder the columns to match the model's expected feature names
     df = df[FEATURE_NAMES]  # Reorder columns
 
-    # Predict rankings
+    # Predict rankings using the loaded model
     predictions = model.predict(df)
 
-    # Update each generator record
+    # Update the generator records with the predicted rankings
     for i, gen in enumerate(generator_instances):
         gen.overall_rank = int(predictions[i])
         gen.save()
 
+import pandas as pd
+import joblib
+from sklearn.ensemble import IsolationForest
+from sklearn.preprocessing import StandardScaler
+import os
+from django.shortcuts import render
+# from .models import Generator, Bear  # Ensure correct model imports
+
+# Paths to model files
+MODEL_PATH = "train/isolation_forest_model.pkl"
+SCALER_PATH = "train/user_scaler.pkl"
+FEATURES_PATH = "train/user_features.pkl"
+CSV_PATH = "train/user_dataset.csv"
 
 def rankings(request):
-    """Admin view to display generator rankings after prediction"""
-    update_generator_rankings()  # Auto-update rankings
-    generators = user_model.generator.objects.all().order_by("overall_rank")  # Show sorted rankings
-    return render(request, "rankings.html", {"generators": generators})
+    """Admin view to display generator rankings after prediction."""
+    update_anomalous_users()  # Ensure anomalies are updated
+    generators = user_model.generator.objects.all().order_by("overall_rank")
+    anomalies = detect_anomalies()
+    return render(request, "rankings.html", {"generators": generators, "anomalies": anomalies})
+
+def detect_anomalies():
+    """Detect anomalies in user data using the trained model."""
+    try:
+        # Load trained model and scaler
+        model = joblib.load(MODEL_PATH)
+        scaler = joblib.load(SCALER_PATH)
+        feature_names = joblib.load(FEATURES_PATH)
+
+        # Ensure user data is saved before analysis
+        save_users_to_csv()
+
+        # Fetch user data
+        users = user_model.bear.objects.all()
+        anomalies = []
+
+        for user in users:
+            # Prepare the input data
+            data = [
+                user.current_usage,
+                user.past_usage,
+                user.avg_usage,
+                user.bill_amount,
+                user.load,
+                user.section,
+                int(user.activity_status)  # Convert Boolean to int (0 or 1)
+            ]
+
+            # Scale the data
+            data_scaled = scaler.transform([data])[0]  # Ensure 1D array
+
+            # Predict anomaly
+            prediction = model.predict([data_scaled])
+
+            if prediction[0] == -1:
+                # Extract the scalar anomaly score
+                anomaly_score = model.decision_function([data_scaled])[0]
+                
+                anomalies.append({
+                    "user": user.username,
+                    "anomaly_score": anomaly_score
+                })
+        
+        return anomalies
+    except Exception as e:
+        print(f"Error detecting anomalies: {e}")
+        return []
+
+def update_anomalous_users():
+    """Check for users showing anomalies and mark them as inactive."""
+    anomalies = detect_anomalies()
+    
+    if anomalies:
+        for anomaly in anomalies:
+            try:
+                user = user_model.bear.objects.get(username=anomaly['user'])
+                user.activity_status = False  # Flagging user as inactive
+                user.save()
+                print(f"Anomaly detected for {user.username}, flagged as inactive.")
+            except user_model.bearear.DoesNotExist:
+                print(f"User {anomaly['user']} not found.")
+    else:
+        print("No anomalies detected.")
+
+def save_users_to_csv():
+    """Fetch all user data from the database and append it to a CSV file."""
+    try:
+        users = user_model.bear.objects.all()
+        
+        data = [[
+            user.username,
+            user.current_usage,
+            user.past_usage,
+            user.avg_usage,
+            user.bill_amount,
+            user.load,
+            user.section,
+            int(user.activity_status)
+        ] for user in users]
+        
+        df = pd.DataFrame(data, columns=["Username", "Current_Usage", "Past_Usage", "Avg_Usage", "Bill_Amount", "Load", "Section", "Activity_Status"])
+        df.to_csv(CSV_PATH, mode='a', header=not os.path.exists(CSV_PATH), index=False)
+        print("User data appended to CSV file.")
+    except Exception as e:
+        print(f"Error saving user data to CSV: {e}")
