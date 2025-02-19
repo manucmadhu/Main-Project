@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
 
+{% block title %}Error{% endblock %}
+
 {% block content %}
-<div class="error-page">
-    <h2>Notification</h2>
-    <p>{{ message }}</p>
-    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+<div class="container d-flex flex-column align-items-center justify-content-center vh-100">
+    <h2 class="text-danger text-center">Oops! Something went wrong.</h2>
+    <p class="text-center">{{ message }}</p>
+    
+    <!-- Return to Login Button -->
+    <a href="{% url 'login' %}" class="btn btn-primary mt-3">Return to Login</a>
 </div>
 {% endblock %}

@@ -572,7 +572,9 @@ def rankings(request):
     update_anomalous_users()  # Ensure anomalies are updated
     generators = user_model.generator.objects.all().order_by("overall_rank")
     anomalies = detect_anomalies()
-    return render(request, "rankings.html", {"generators": generators, "anomalies": anomalies})
+    predictions =maintenance_predictions()  # Get predictions
+    # return render(request, "maintenance.html", {"predictions": predictions})
+    return render(request, "rankings.html", {"generators": generators, "anomalies": anomalies,"predictions": predictions})
 
 def detect_anomalies():
     """Detect anomalies in user data using the trained model."""
@@ -658,3 +660,118 @@ def save_users_to_csv():
         print("User data appended to CSV file.")
     except Exception as e:
         print(f"Error saving user data to CSV: {e}")
+from django.http import JsonResponse
+from django.shortcuts import render
+import pandas as pd
+import joblib
+import os
+
+# 📌 Define file paths
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(BASE_DIR, "train", "maintenance_model.pkl")
+SCALER_PATH = os.path.join(BASE_DIR, "train", "maintenance_scaler.pkl")
+DATA_PATH = os.path.join(BASE_DIR, "train", "maintenance_data.csv")
+
+# 📌 Load model and scaler with error handling
+try:
+    if not (os.path.exists(MODEL_PATH) and os.path.exists(SCALER_PATH)):
+        raise FileNotFoundError("❌ Model or scaler file missing!")
+
+    model = joblib.load(MODEL_PATH)
+    scaler = joblib.load(SCALER_PATH)
+
+except Exception as e:
+    raise FileNotFoundError(f"❌ Error loading model/scaler: {e}")
+
+def maintenance_predictions():
+    # 📌 Load data safely
+    try:
+        df = pd.read_csv(DATA_PATH)
+    except Exception as e:
+        return JsonResponse({"error": f"❌ Error loading data: {e}"}, status=500)
+
+    # 📌 Ensure only valid columns are used
+    feature_columns = ["Generator_ID", "Runtime_Hours", "Fuel_Consumption", 
+                       "Temperature", "Vibration_Level", "Last_Maintenance_Days"]
+    
+    if not all(col in df.columns for col in feature_columns):
+        return JsonResponse({"error": "❌ Required columns missing in dataset!"}, status=400)
+
+    # 📌 Preprocess input
+    df_filtered = df[feature_columns]
+
+    # 📌 Convert categorical column 'Generator_ID' if necessary
+    df_filtered["Generator_ID"] = df_filtered["Generator_ID"].astype("category").cat.codes
+
+    # 📌 Scale data and predict
+    try:
+        scaled_data = scaler.transform(df_filtered)
+        predictions = model.predict(scaled_data)
+        df["prediction"] = ["Maintenance Required" if p == -1 else "Normal" for p in predictions]
+    except Exception as e:
+        return JsonResponse({"error": f"❌ Prediction error: {e}"}, status=500)
+
+    # 📌 Return predictions as JSON
+    return JsonResponse({"predictions": df.to_dict(orient="records")}, safe=False)
+
+from django.shortcuts import render
+import pandas as pd
+import json
+
+# 📌 Path to power data CSV file
+DATA_PATH = "train\household_power_consumption.csv"
+
+def gross_power_data(request):
+    if not os.path.exists(DATA_PATH):
+        return render(request, "error.html", {"message": "Data file not found!"})
+
+    # Load required data
+    df = pd.read_csv(DATA_PATH, usecols=["Date", "Time", "Global_active_power", "Global_reactive_power", 
+                                         "Voltage", "Global_intensity", "Sub_metering_1", 
+                                         "Sub_metering_2", "Sub_metering_3"], nrows=100)
+
+    # Compute Total Power
+    df["Total_Power"] = df["Global_active_power"] + df["Global_reactive_power"]
+    
+    # Fetch database values
+    total_power_generated = sum(gen.current_production for gen in generator.objects.all())
+    total_usage = sum(sec.load for sec in user_model.section.objects.all())
+
+    # Section-wise Power Data
+    section_data = [
+        {
+            "uuid": sec.uuid,
+            "usage": sec.load,
+            "users": sec.users
+        }
+        for sec in user_model.section.objects.all()
+    ]
+
+    context = {
+        "power_data": df.to_dict(orient="records"),
+        "total_power": total_power_generated,
+        "total_usage": total_usage,
+        "section_data": section_data  # Pass section-wise data
+    }
+    return render(request, 'gross.html', context)
+
+
+
+def gross_maintenance(request):
+    schedules = Schedule.objects.all()
+
+    total_schedules = schedules.count()
+    completed_count = schedules.filter(completed=True).count()
+    pending_count = total_schedules - completed_count
+    total_est_cost = sum(schedule.est_cost for schedule in schedules)
+    total_act_cost = sum(schedule.act_cost for schedule in schedules)
+
+    context = {
+        "schedules": schedules,
+        "total_schedules": total_schedules,
+        "completed_count": completed_count,
+        "pending_count": pending_count,
+        "total_est_cost": total_est_cost,
+        "total_act_cost": total_act_cost
+    }
+    return render(request, 'gross_maintenance.html', context)

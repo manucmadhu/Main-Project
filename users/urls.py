@@ -6,7 +6,6 @@ from users import views as user_views
 from admin_panel import views as admin_views
 urlpatterns = [
     path('', views.cauthenticate, name='cauthenticate'),
-    #  path('', views.dashboard_view, name='dashboard'),
     path('signup', views.signup_view, name='signup'),
     path('ad',views.login_view,name='login_view'),
     path('generators/<int:generator_id>', admin_views.view_generator, name='view_generator'),  # Corrected URL pattern
@@ -23,5 +22,6 @@ urlpatterns = [
    path('powerusage/<int:user_id>',views.power_usage,name='powerusage'),
    path('billpay/<int:user_id>',views.bill_collec,name='billpay'),
    path('payment/process/<str:uuid>/', views.process_payment, name='process_payment'),
-   path("rankings/", admin_views.rankings, name="rankings")
+   path("rankings/", admin_views.rankings, name="rankings"),
+   path("gross-power-data/", admin_views.gross_power_data, name="gross-power-data"),
 ]

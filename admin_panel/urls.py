@@ -22,5 +22,7 @@ urlpatterns = [
     path('powerusage/<int:user_id>',user_views.power_usage,name='powerusage'),
     path('billpay/<int:user_id>',user_views.bill_collec,name='billpay'),
     path('payment/process/<str:uuid>/', user_views.process_payment, name='process_payment'),
-    path("rankings/", views.rankings, name="rankings")
+    path("rankings/", views.rankings, name="rankings"),
+    path("gross-power-data/", views.gross_power_data, name="gross-power-data"),
+    path('maintenance/', views.gross_maintenance, name='gross_maintenance'),
 ]

@@ -41,7 +41,7 @@
                 <p>Total Usage: {{ total_usage }} MW</p>
                 <p>Difference: {{ difference }} MW</p>
                 <p class="card-text">Show Real-Time Statistics</p>
-                <a href="#" class="btn btn-light">Show Stats</a>
+                <a href="{% url 'gross-power-data' %}" class="btn btn-light">Show Stats</a>
             </div>
         </div>
     </div>
@@ -74,13 +74,13 @@
 
     <div class="col-md-4">
         <div class="card text-white bg-danger mb-3">
-            <div class="card-header">Notifications</div>
+            <div class="card-header">AI Predictions</div>
             <div class="card-body">
-                <p>Erorrs: {{errors}} </p>
-                <p>Complaints:{{Complaints}} </p>
-                <p>Resolved:{{resolved}} %</p>
-                <p class="card-text">View real-time Statistics.</p>
-                <a href="{% url 'rankings' %}" class="btn btn-light">Show Statistics</a>
+                <p>Generator Rankings</p>
+                <p>User Anomalies </p>
+                <p>Maintenance Predictions</p>
+                <p class="card-text">View real-time Predictions.</p>
+                <a href="{% url 'rankings' %}" class="btn btn-light">Show Predictions</a>
             </div>
         </div>
     </div>
@@ -116,13 +116,13 @@
 
     <div class="col-md-4">
         <div class="card text-white bg-danger mb-3">
-            <div class="card-header">Maintenance Anticipation</div>
+            <div class="card-header">Maintenance Gross</div>
             <div class="card-body">
                 <p>Number of Maintenance: {{ pending_maintenance }}</p>
                 <p>Associated Cost: 6.54 MW</p>
                 <p>Associated Hours: 1202 Hrs</p>
                 <p class="card-text">View real-time Statistics.</p>
-                <a href="#" class="btn btn-light">Show Statistics</a>
+                <a href="{% url 'gross_maintenance'%}" class="btn btn-light">Show Statistics</a>
             </div>
         </div>
     </div>

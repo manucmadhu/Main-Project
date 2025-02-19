@@ -52,5 +52,41 @@
         </tr>
         {% endfor %}
     </table>
+    <h2 style="text-align: center;">Maintenance Predictions</h2>
+
+<table border="1" style="width: 100%; border-collapse: collapse; text-align: center;">
+    <tr>
+        <th>Generator ID</th>
+        <th>Usage Hours</th>
+        <th>Last Maintenance (Days)</th>
+        <th>Temperature (°C)</th>
+        <th>Vibration Level</th>
+        <th>Power Output (kW)</th>
+        <th>Maintenance Status</th>
+    </tr>
+    
+    {% for generator in maintenance_data %}
+    <tr class="{% if generator.requires_maintenance %}needs-maintenance{% endif %}">
+        <td>{{ generator.generator_id }}</td>
+        <td>{{ generator.usage_hours }}</td>
+        <td>{{ generator.last_maintenance }}</td>
+        <td>{{ generator.temperature }}</td>
+        <td>{{ generator.vibration }}</td>
+        <td>{{ generator.power_output }}</td>
+        <td>
+            {% if generator.requires_maintenance %}
+                ⚠️ Requires Maintenance
+            {% else %}
+                ✅ No Issues
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="7">✅ No Maintenance Required.</td>
+    </tr>
+    {% endfor %}
+</table>
+
 </body>
 </html>

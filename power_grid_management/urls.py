@@ -29,5 +29,6 @@ urlpatterns = [
     path('billpay/<int:user_id>',user_views.bill_collec,name='billpay'),
     path('payment/process/<str:uuid>/', user_views.process_payment, name='process_payment'),
     path("rankings/", admin_views.rankings, name="rankings"),
-    path("rankings/", admin_views.rankings, name="rankings")
+    path("gross-power-data/", admin_views.gross_power_data, name="gross-power-data"),
+    path('maintenance/', admin_views.gross_maintenance, name='gross_maintenance'),
 ]

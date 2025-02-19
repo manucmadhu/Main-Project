@@ -11,17 +11,20 @@
             display: none;
             position: fixed;
             top: 0;
-            left: 0;
-            width: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            max-width: 80%;
             text-align: center;
-            padding: 10px;
+            padding: 10px 20px;
             z-index: 1000;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
     <!-- Notification Ribbon -->
-    <div id="notification" class="alert alert-info"></div>
+    <div id="notification" class="alert"></div>
 
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -55,34 +58,27 @@
             notification.className = "alert alert-" + type;
             notification.style.display = "block";
 
-            // Auto-hide after 3 seconds
+            // Auto-hide after 5 seconds
             setTimeout(function() {
                 notification.style.display = "none";
-            }, 3000);
+            }, 5000);
         }
 
-        // Function to fetch JSON response from Django API
-        function fetchNotifications() {
-            fetch('/your-api-endpoint')  // Replace with actual API URL
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
+        // Fetch error messages from Django API
+        function fetchErrors() {
+            fetch('/api/get-errors')  // Change this to the actual error API endpoint
+            .then(response => response.json())
             .then(data => {
-                if (data.message) {
-                    showNotification(data.message, "success");
+                if (data.error) {
+                    showNotification(data.error, "danger");
                 }
             })
-            .catch(error => {
-                console.warn("No notifications available or API error:", error);
-            });
+            .catch(error => console.warn("No errors available or API error:", error));
         }
 
-        // Fetch notifications only after page loads
+        // Fetch errors after page loads
         document.addEventListener("DOMContentLoaded", function() {
-            fetchNotifications();
+            fetchErrors();
         });
     </script>
 </body>

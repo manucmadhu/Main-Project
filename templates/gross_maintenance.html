@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Maintenance Overview{% endblock %}
+
+{% block content %}
+<div class="container-fluid d-flex flex-column align-items-center justify-content-center vh-100">
+    <h2 class="text-center">Gross Maintenance Overview</h2>
+
+    <!-- Summary Statistics -->
+    <div class="row text-center my-3 w-75">
+        <div class="col-md-3 p-2 border rounded bg-light">
+            <h4>Total Schedules</h4>
+            <p>{{ total_schedules }}</p>
+        </div>
+        <div class="col-md-3 p-2 border rounded bg-success text-white">
+            <h4>Completed</h4>
+            <p>{{ completed_count }}</p>
+        </div>
+        <div class="col-md-3 p-2 border rounded bg-warning text-dark">
+            <h4>Pending</h4>
+            <p>{{ pending_count }}</p>
+        </div>
+        <div class="col-md-3 p-2 border rounded bg-info text-white">
+            <h4>Estimated Cost</h4>
+            <p>${{ total_est_cost }}</p>
+        </div>
+    </div>
+
+    <!-- Maintenance Cost Chart -->
+    <h3 class="text-center mt-3">Maintenance Cost Overview</h3>
+    <div class="d-flex justify-content-center align-items-center w-75" style="height: 50vh;">
+        <canvas id="costChart"></canvas>
+    </div>
+
+    <!-- Maintenance Schedule Table -->
+    <h3 class="text-center mt-4">Maintenance Schedules</h3>
+    <table class="table table-bordered text-center w-75">
+        <thead class="table-dark">
+            <tr>
+                <th>Object</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Est. Cost ($)</th>
+                <th>Act. Cost ($)</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in schedules %}
+            <tr>
+                <td>{{ schedule.obj }}</td>
+                <td>{{ schedule.start_time }}</td>
+                <td>{{ schedule.end_time }}</td>
+                <td>${{ schedule.est_cost }}</td>
+                <td>${{ schedule.act_cost }}</td>
+                <td>
+                    {% if schedule.completed %}
+                        <span class="badge bg-success">Completed</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No maintenance schedules available</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('costChart').getContext('2d');
+
+        {% with est_cost=total_est_cost act_cost=total_act_cost %}
+        const costData = {
+            estimated: {{ est_cost }},
+            actual: {{ act_cost }}
+        };
+        {% endwith %}
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Estimated Cost", "Actual Cost"],
+                datasets: [{
+                    label: "Cost ($)",
+                    data: [costData.estimated, costData.actual],
+                    backgroundColor: ["blue", "green"],
+                    borderColor: "black",
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
