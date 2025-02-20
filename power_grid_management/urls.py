@@ -9,6 +9,8 @@ urlpatterns = [
     path('logout/', user_views.login_view, name='logout'),
     path('api/update-usage-bill/', admin_views.update_usage_and_bill, name='update_usage_and_bill'),
     path('api/update_generator/', admin_views.update_generator, name='update_generator'),
+    path("manage-complaints/", admin_views.manage_complaints, name="manage_complaints"),
+
     path('', user_views.cauthenticate, name='authenticate'),
     path('ad',user_views.login_view,name='login'),
     path('admin_panel/<int:user_id>',user_views.admin_view,name='admin_panel'),
@@ -34,6 +36,8 @@ urlpatterns = [
     path("rankings/", admin_views.rankings, name="rankings"),
     path("gross-power-data/", admin_views.gross_power_data, name="gross-power-data"),
     path('maintenance/', admin_views.gross_maintenance, name='gross_maintenance'),
-    path('chabot/<int:user_id>',chatbot_views.chatbot_api,name='chatbot_api')
-    
+    path('chabot/<int:user_id>',chatbot_views.chatbot_api,name='chatbot_api'),
+    path("file-complaint/<str:user_id>/", user_views.file_complaint, name="file_complaint"),
+    path("user-complaints/<str:user_id>/", user_views.user_complaints, name="user_complaints"),
+    path("complaint-status/<int:complaint_id>/", user_views.complaint_status, name="complaint_status")  
 ]

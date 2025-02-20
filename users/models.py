@@ -96,3 +96,20 @@ class Schedule(models.Model):
     est_cost=models.FloatField(default=0)
     act_cost=models.FloatField(default=0)
     completed=models.BooleanField(default=False)
+    
+from django.db import models
+from users.models import bear  # Import user model
+
+class Complaint(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("in_progress", "In Progress"),
+        ("resolved", "Resolved"),
+    ]
+
+    user = models.CharField(max_length=30)
+    subject = models.CharField(max_length=255)
+    description = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

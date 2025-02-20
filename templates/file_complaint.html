@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}File a Complaint{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center mt-4">File a Complaint</h2>
+
+    <div id="message"></div>
+
+    <form id="complaint-form">
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" class="form-control" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description" class="form-control" rows="4" required></textarea>
+
+        <button type="button" class="btn btn-primary mt-3" onclick="submitComplaint()">Submit</button>
+    </form>
+</div>
+
+<script>
+    function submitComplaint() {
+        let subject = document.getElementById("subject").value;
+        let description = document.getElementById("description").value;
+        let userUUID = "{{ user_id }}";
+
+        fetch(`/file-complaint/${userUUID}/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ subject: subject, description: description }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("message").innerHTML = `<p class="alert alert-success">${data.message}</p>`;
+            document.getElementById("complaint-form").reset();
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+</script>
+{% endblock %}

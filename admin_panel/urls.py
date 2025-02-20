@@ -26,5 +26,6 @@ urlpatterns = [
     path("gross-power-data/", views.gross_power_data, name="gross-power-data"),
     path('maintenance/', views.gross_maintenance, name='gross_maintenance'),
     path('api/update-usage-bill/', views.update_usage_and_bill, name='update_usage_and_bill'),
-    path('chabot/<int:user_id>',chatbot_views.chatbot_api,name='chatbot_api')
+    path('chabot/<int:user_id>',chatbot_views.chatbot_api,name='chatbot_api'),
+
 ]

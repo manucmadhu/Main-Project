@@ -25,4 +25,7 @@ urlpatterns = [
    path("rankings/", admin_views.rankings, name="rankings"),
    path("gross-power-data/", admin_views.gross_power_data, name="gross-power-data"),
    path('api/update-usage-bill/', admin_views.update_usage_and_bill, name='update_usage_and_bill'),
+   path("file-complaint/<str:user_id>/", views.file_complaint, name="file_complaint"),
+    path("user-complaints/<str:user_id>/", views.user_complaints, name="user_complaints"),
+    path("complaint-status/<int:complaint_id>/", views.complaint_status, name="complaint_status"),
 ]

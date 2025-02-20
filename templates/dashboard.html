@@ -39,9 +39,22 @@
             <div class="card-header">File a Complaint</div>
             <div class="card-body">
                 <p class="card-text">File your Complaints online..</p>
-                <a href="#" class="btn btn-light">Complaint</a>
+                <a href="{% url 'file_complaint' user_id=user.uuid%}" class="btn btn-light">Complaint</a>
+            </div>
+        </div> 
+        {% comment %}  {% endcomment %}
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-header">Complaints</div>
+                <div class="card-body">
+                    <p class="card-text">View Complaints.</p>
+                    <a href="{% url 'user_complaints' user_id=user.uuid%}" class="btn btn-light">Complaints</a>
+                </div>
             </div>
         </div>
-    </div>
+        
+        </div>
 </div>
 {% endblock %}

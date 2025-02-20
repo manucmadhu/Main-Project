@@ -223,3 +223,43 @@ def process_payment(request, uuid):
         return redirect('billpay', user_id=uuid)
     except bill.DoesNotExist:
         return redirect('dashboard')  # Redirect if bill not found
+    
+    
+    
+    
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import Complaint
+import json
+
+@csrf_exempt
+def file_complaint(request, user_id):
+    """Handles user complaints submission."""
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            subject = data.get("subject")
+            description = data.get("description")
+
+            if not subject or not description:
+                return JsonResponse({"error": "Subject and description are required."}, status=400)
+
+            complaint = Complaint.objects.create(user=user_id, subject=subject, description=description)
+            return JsonResponse({"message": "Complaint filed successfully!", "complaint_id": complaint.id})
+
+        except Exception as e:
+            return JsonResponse({"error": f"Server error: {e}"}, status=500)
+
+    return render(request, "file_complaint.html", {"user_id": user_id})
+
+def user_complaints(request, user_id):
+    """Fetches complaints filed by a user."""
+    complaints = Complaint.objects.filter(user=user_id).order_by("-created_at")
+    return render(request, "user_complaints.html", {"user_id": user_id, "complaints": complaints})
+
+def complaint_status(request, complaint_id):
+    """Fetches the status of a specific complaint."""
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    return JsonResponse({"complaint_id": complaint.id, "status": complaint.status})
+ 

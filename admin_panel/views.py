@@ -993,3 +993,36 @@ def update_grid(id):
 
     except Exception as e:
         print(f"Error updating grid {id}: {e}")
+
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.contrib import messages
+from users.models import Complaint  # Import Complaint model
+from django.views.decorators.csrf import csrf_exempt
+
+def manage_complaints(request):
+    """Admin view to manage user complaints"""
+    complaints = Complaint.objects.all()
+
+    if request.method == "POST":
+        if "save_changes" in request.POST:  # Save button clicked
+            complaint_id = request.POST.get("complaint_id")
+            new_status = request.POST.get("status")
+
+            if complaint_id and new_status:
+                complaint = Complaint.objects.filter(id=complaint_id).first()
+                if complaint:
+                    complaint.status = new_status
+                    complaint.save()
+                    messages.success(request, f"Complaint #{complaint.id} updated to {new_status}.")
+
+        elif "delete_complaint" in request.POST:  # Delete button clicked
+            complaint_id = request.POST.get("complaint_id")
+            complaint = Complaint.objects.filter(id=complaint_id).first()
+            if complaint:
+                complaint.delete()
+                messages.success(request, f"Complaint #{complaint_id} deleted successfully.")
+
+        return redirect("manage_complaints")
+
+    return render(request, "manage_complaints.html", {"complaints": complaints})

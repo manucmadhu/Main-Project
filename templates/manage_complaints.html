@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Complaints{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">User Complaints</h2>
+
+    {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <table class="table table-bordered text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Subject</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for complaint in complaints %}
+            <tr>
+                <td>{{ complaint.id }}</td>
+                <td>{{ complaint.user }}</td>
+                <td>{{ complaint.subject }}</td>
+                <td>{{ complaint.description }}</td>
+                <td>
+                    <form method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="complaint_id" value="{{ complaint.id }}">
+                        <select name="status" class="form-select">
+                            <option value="pending" {% if complaint.status == "pending" %}selected{% endif %}>Pending</option>
+                            <option value="in_progress" {% if complaint.status == "in_progress" %}selected{% endif %}>In Progress</option>
+                            <option value="resolved" {% if complaint.status == "resolved" %}selected{% endif %}>Resolved</option>
+                        </select>
+                        <button type="submit" name="save_changes" class="btn btn-success mt-2">Save</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="complaint_id" value="{{ complaint.id }}">
+                        <button type="submit" name="delete_complaint" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No complaints found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

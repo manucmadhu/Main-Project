@@ -126,6 +126,19 @@
             </div>
         </div>
     </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">User Complaints</div>
+            <div class="card-body">
+                <p>Total Complaints: {{ total_complaints }}</p>
+                <p>Pending Complaints: {{ pending_complaints }}</p>
+                <p>Resolved Complaints: {{ resolved_complaints }}</p>
+                <p class="card-text">View and Manage Complaints.</p>
+                <a href="{% url 'manage_complaints' %}" class="btn btn-light">Manage Complaints</a>
+            </div>
+        </div>
+    </div>
+    
 </div>
 
 {% endblock %}

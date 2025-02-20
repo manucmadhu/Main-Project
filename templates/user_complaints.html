@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Your Complaints{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center mt-4">Your Complaints</h2>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Filed On</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for complaint in complaints %}
+            <tr>
+                <td>{{ complaint.subject }}</td>
+                <td>{{ complaint.description }}</td>
+                <td>
+                    <span id="status-{{ complaint.id }}">{{ complaint.status }}</span>
+                    <button class="btn btn-sm btn-info" onclick="fetchStatus({{ complaint.id }})">Refresh</button>
+                </td>
+                <td>{{ complaint.created_at }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">No complaints filed.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function fetchStatus(complaintId) {
+        fetch(`/complaint-status/${complaintId}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById(`status-${complaintId}`).innerText = data.status;
+        })
+        .catch(error => console.error("Error fetching status:", error));
+    }
+</script>
+{% endblock %}
