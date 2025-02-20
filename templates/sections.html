@@ -11,7 +11,7 @@
         <h2>Sections</h2>
 
         <!-- Section ID Input Form -->
-        <form method="GET" action="{% url 'view_sections' section_id=1 %}">
+        <form method="GET" action="{% url 'view_sections' sec_id=1 %}">
             <label for="section_id">Enter Section ID: </label>
             <input type="text" id="section_id" name="section_id" required>
             <button type="submit">View Section</button>
@@ -26,7 +26,7 @@
                 <p><strong>Users:</strong> {{ section.users }}</p>
                 <p><strong>Current Load:</strong> {{ section.load }}</p>
                 <p><strong>Max Load:</strong> {{ section.max_load }}</p>
-                <a href="{% url 'update_section' section_id=section.uuid %}">Edit Section</a>
+                <a href="{% url 'update_section' sec_id=section.uuid %}">Edit Section</a>
             </div>
         {% else %}
             <p>No section found. Please enter a valid section ID.</p>

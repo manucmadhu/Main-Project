@@ -16,14 +16,14 @@ def manage_generators(request):
     return JsonResponse(data)
 
 
-def view_section(request, section_id):
-    section = get_object_or_404(user_model.section, uuid=section_id)
+def view_section(request, sec_id):
+    section = get_object_or_404(user_model.section, uuid=sec_id)
     user=request.user
     return render(request, 'sections.html', {'section': section,'user':user})
 
 
-def update_section(request, section_id):
-    section = get_object_or_404(user_model.section, uuid=section_id)
+def update_section(request, sec_id):
+    section = get_object_or_404(user_model.section, uuid=sec_id)
 
     if request.method == 'POST':
         # Update fields with data from the form
@@ -31,12 +31,9 @@ def update_section(request, section_id):
             activity_status = request.POST.get('activity_status', 'on')
         else:
             activity_status = request.POST.get('activity_status', 'off')  # Default to 'off' if not provided
-        # section.grids = request.POST.get('grids', section.grids)
-        # section.users = int(request.POST.get('users', section.users))  # Convert to int
-        # section.load = int(request.POST.get('load', section.load))  # Convert to int
         section.max_load = int(request.POST.get('max_load', section.max_load))  # Convert to int
-        section.users=user_model.bear.objects.filter(section=section.uuid).count()
-        total_usage_difference = user_model.bear.objects.filter(section=section.uuid).annotate(usage_diff=F('current_usage') - F('past_usage')).aggregate(total_usage_diff=Sum('usage_diff'))['total_usage_diff']
+        section.users=user_model.bear.objects.filter(section_id=section.uuid).count()
+        total_usage_difference = user_model.bear.objects.filter(section_id=section.uuid).annotate(usage_diff=F('current_usage') - F('past_usage')).aggregate(total_usage_diff=Sum('usage_diff'))['total_usage_diff']
 
 # Assign the calculated value to the section's load
         section.load = total_usage_difference if total_usage_difference is not None else 0
@@ -49,7 +46,7 @@ def update_section(request, section_id):
             sec_off(section_id=section.uuid)
         else:
             if section.activity_status is False:
-                sec_on(section_id)
+                sec_on(sec_id)
             section.activity_status = True
             
 
@@ -70,7 +67,7 @@ def update_section(request, section_id):
         # Save the updated section
         section.save()
 
-        return redirect('view_sections',section_id=section.uuid)  # Redirect to the correct view (ensure 'view_sections' is defined in urls)
+        return redirect('view_sections',sec_id=section.uuid)  # Redirect to the correct view (ensure 'view_sections' is defined in urls)
 
     return render(request, 'update_sections.html', {'section': section})
 
@@ -172,7 +169,7 @@ def update_generator(request, generator_id):
     old_status = generator.activity_status  # Store old status
 
     if request.method == 'POST':
-        generator.fuel = request.POST.get('fuel', generator.fuel)
+        # generator.fuel = request.POST.get('fuel', generator.fuel)
         generator.current_production = request.POST.get('current_production', generator.current_production)
         generator.peak_capacity = request.POST.get('peak_capacity', generator.peak_capacity)
 
@@ -910,11 +907,11 @@ def update_usage_and_bill(request):
         except Exception as e:
             return JsonResponse({"error": f"Error updating section load: {e}"}, status=500)
     
-    update_section(user_instance.section_id)
+    update_apisection(user_instance.section_id)
     return JsonResponse({"message": "Usage, bill, and section load updated successfully."})
 
 @csrf_exempt
-def update_generator(request):
+def update_apigenerator(request):
     """
     API endpoint to update generator details.
     Expects a POST request with a JSON payload.
@@ -972,7 +969,7 @@ def update_generator(request):
 
     return JsonResponse({"message": "Generator details updated successfully."})
 
-def update_section(id):
+def update_apisection(id):
     section = user_model.section.objects.filter(uuid=id).first()
     
     if not section:
@@ -983,10 +980,10 @@ def update_section(id):
         # Summing up the `load` values of all users in the given section
         section.load = sum(user.load for user in user_model.bear.objects.filter(section_id=section.uuid))
         section.save()  # Save changes to the database
-        update_grid(section.grids)
+        update_apigrid(section.grids)
     except Exception as e:
         print(f"Error updating grid: {e}")
-def update_grid(id):
+def update_apigrid(id):
     grid = user_model.grid.objects.filter(uuid=id).first()
     
     if not grid:

@@ -21,7 +21,7 @@
     {% if generator %}
         <div class="generator-details">
             <h3>Generator Details</h3>
-            <p><strong>Fuel:</strong> {{ generator.fuel }}</p>
+            {% comment %} <p><strong>Fuel:</strong> {{ generator.fuel }}</p> {% endcomment %}
             <p><strong>Status:</strong> {{ generator.activity_status }}</p>
             <p><strong>Power Produced:</strong> {{ generator.current_production }}</p>
             <p><strong>Peak Capacity:</strong> {{ generator.peak_capacity }}</p>
