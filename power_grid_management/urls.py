@@ -6,6 +6,8 @@ from dashboard import views as dashboard_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('logout/', user_views.login_view, name='logout'),
+    path('api/update-usage-bill/', admin_views.update_usage_and_bill, name='update_usage_and_bill'),
+    path('api/update_generator/', admin_views.update_generator, name='update_generator'),
     path('', user_views.cauthenticate, name='authenticate'),
     path('ad',user_views.login_view,name='login'),
     path('admin_panel/<int:user_id>',user_views.admin_view,name='admin_panel'),
@@ -31,4 +33,5 @@ urlpatterns = [
     path("rankings/", admin_views.rankings, name="rankings"),
     path("gross-power-data/", admin_views.gross_power_data, name="gross-power-data"),
     path('maintenance/', admin_views.gross_maintenance, name='gross_maintenance'),
+    
 ]

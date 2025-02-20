@@ -24,4 +24,5 @@ urlpatterns = [
    path('payment/process/<str:uuid>/', views.process_payment, name='process_payment'),
    path("rankings/", admin_views.rankings, name="rankings"),
    path("gross-power-data/", admin_views.gross_power_data, name="gross-power-data"),
+   path('api/update-usage-bill/', admin_views.update_usage_and_bill, name='update_usage_and_bill'),
 ]

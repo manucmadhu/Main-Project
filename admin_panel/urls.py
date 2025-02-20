@@ -25,4 +25,5 @@ urlpatterns = [
     path("rankings/", views.rankings, name="rankings"),
     path("gross-power-data/", views.gross_power_data, name="gross-power-data"),
     path('maintenance/', views.gross_maintenance, name='gross_maintenance'),
+    path('api/update-usage-bill/', views.update_usage_and_bill, name='update_usage_and_bill'),
 ]

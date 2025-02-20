@@ -26,7 +26,7 @@ class bear(models.Model):
     avg_usage = models.IntegerField(default=0, blank=True, null=True)
     bill_amount = models.IntegerField(default=0, blank=True, null=True)
     # pending = models.IntegerField(default=0, blank=True, null=True)
-    section=models.CharField(max_length=50,default=0)
+    section_id=models.CharField(max_length=50,default=0)
     activity_status = models.BooleanField(default=True)
     load=models.IntegerField(default=0)
     # groups = models.ManyToManyField(Group, related_name='bear_users', blank=True)

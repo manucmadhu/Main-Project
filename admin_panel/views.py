@@ -76,7 +76,7 @@ def update_section(request, section_id):
 
 def sec_on(section_id):
     section=get_object_or_404(user_model.section_id,uuid=section_id)
-    for user in user_model.bear.objects.filter(section=section.uuid):
+    for user in user_model.bear.objects.filter(section_id=section.uuid):
         user_on(user_id=user.uuid)
     section.activity_status=True
     section.save()
@@ -287,7 +287,7 @@ from datetime import timedelta
 def sec_off(section_id):
     section=get_object_or_404(user_model.section,uuid=section_id)
     try:
-        for user in user_model.bear.objects.filter(section=section.uuid):
+        for user in user_model.bear.objects.filter(section_id=section.uuid):
             send_error_message(user.uuid,now(),now()+timedelta(hours=2))
             user_off(user_id=user.uuid)
     except Exception as e:
@@ -319,8 +319,8 @@ def update_user(request,user_id):
         user.username=request.POST.get('user_name',user.username)
         user.email=request.POST.get('user_email',user.email)
         user.name=request.POST.get('name',user.name)
-        section_id=request.POST.get('section',user.section)
-        if user.section!= section_id:
+        section_id=request.POST.get('section',user.section_id)
+        if user.section_id!= section_id:
             section=get_object_or_404(user_model.section,uuid=section_id)
             section.load+=user.load
             if section.load>section.max_load:
@@ -365,7 +365,7 @@ def edit_user(request,user_id):
         user.username=request.POST.get('user_name',user.username)
         user.email=request.POST.get('user_email',user.email)
         user.name=request.POST.get('name',user.name)
-        user.section=request.POST.get('section',user.section)
+        user.section_id=request.POST.get('section',user.section_id)
         user.profile_pic=request.POST.get('profile_pic',user.profile_pic)
         user.save()
         # Save updates
@@ -716,10 +716,12 @@ def maintenance_predictions():
 
 from django.shortcuts import render
 import pandas as pd
-import json
+import os
+from users.models import generator
+from users.models import section  # Assuming correct import path
 
 # 📌 Path to power data CSV file
-DATA_PATH = "train\household_power_consumption.csv"
+DATA_PATH = "train/household_power_consumption.csv"
 
 def gross_power_data(request):
     if not os.path.exists(DATA_PATH):
@@ -733,9 +735,12 @@ def gross_power_data(request):
     # Compute Total Power
     df["Total_Power"] = df["Global_active_power"] + df["Global_reactive_power"]
     
+    # Predicted Total Power (sum of all rows)
+    predicted_total = df["Total_Power"].sum()
+
     # Fetch database values
     total_power_generated = sum(gen.current_production for gen in generator.objects.all())
-    total_usage = sum(sec.load for sec in user_model.section.objects.all())
+    total_usage = sum(sec.load for sec in section.objects.all())
 
     # Section-wise Power Data
     section_data = [
@@ -744,15 +749,17 @@ def gross_power_data(request):
             "usage": sec.load,
             "users": sec.users
         }
-        for sec in user_model.section.objects.all()
+        for sec in section.objects.all()
     ]
 
     context = {
         "power_data": df.to_dict(orient="records"),
         "total_power": total_power_generated,
         "total_usage": total_usage,
-        "section_data": section_data  # Pass section-wise data
+        "section_data": section_data,  # Pass section-wise data
+        "predicted_total": predicted_total  # Ensure predicted value is passed
     }
+    
     return render(request, 'gross.html', context)
 
 
@@ -775,3 +782,214 @@ def gross_maintenance(request):
         "total_act_cost": total_act_cost
     }
     return render(request, 'gross_maintenance.html', context)
+
+
+from django.views.decorators.csrf import csrf_exempt
+
+
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import F
+# from api_updates import user_model  # Import your models
+
+@csrf_exempt
+def update_usage_and_bill(request):
+    """
+    API endpoint to update usage details, bill amount, and section load for a user.
+    Expects a POST request with a JSON payload.
+
+    Example payload:
+    {
+        "uuid": "user123",
+        "current_usage": 150,
+        "past_usage": 200,
+        "avg_usage": 175,
+        "bill_amount": 50,
+        "load": 80,
+        "section": "A"
+    }
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid HTTP method. Use POST."}, status=405)
+
+    # Parse JSON data
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON payload."}, status=400)
+
+    # Validate required field
+    user_uuid = data.get("uuid")
+    if not user_uuid:
+        return JsonResponse({"error": "User UUID is required."}, status=400)
+
+    # Get the user instance
+    try:
+        user_instance = user_model.bear.objects.get(uuid=user_uuid)
+    except user_model.bear.DoesNotExist:
+        return JsonResponse({"error": f"User with UUID '{user_uuid}' not found."}, status=404)
+
+    # Store previous section and load for adjustment
+    previous_section_uuid = user_instance.section_id
+    previous_load = user_instance.load
+
+    # Update user fields if provided
+    if "current_usage" in data:
+        user_instance.current_usage = data["current_usage"]
+    if "past_usage" in data:
+        user_instance.past_usage = data["past_usage"]
+    if "avg_usage" in data:
+        user_instance.avg_usage = data["avg_usage"]
+    if "load" in data:
+        user_instance.load = data["load"]
+    if "section_id" in data:
+        user_instance.section_id = data["section_id"]
+
+    # Save user updates
+    try:
+        user_instance.save()
+    except Exception as e:
+        return JsonResponse({"error": f"Error saving user data: {e}"}, status=500)
+
+    # Update or create the bill record for this user
+    try:
+        bill_instance, created = user_model.bill.objects.get_or_create(user=user_uuid, defaults={"pending_amount": 0.0})
+        if "bill_amount" in data:
+            bill_instance.pending_amount = data["bill_amount"]
+            bill_instance.save()
+    except Exception as e:
+        return JsonResponse({"error": f"Error updating bill data: {e}"}, status=500)
+
+    # Update section load if "load" or "section" has changed
+    if "load" in data or "section" in data:
+        try:
+            new_section_uuid = user_instance.section_id
+            new_load = user_instance.load
+
+            # Reduce load from previous section
+            if previous_section_uuid and previous_section_uuid != new_section_uuid:
+                user_model.section.objects.filter(uuid=previous_section_uuid).update(load=F("load") - previous_load)
+
+            # Increase load for the new section
+            if new_section_uuid:
+                new=user_model.section.objects.filter(uuid=new_section_uuid).first()
+                
+                new.load=min(new.max_load,new.load+new_load)
+                new.save()
+        except Exception as e:
+            return JsonResponse({"error": f"Error updating section load: {e}"}, status=500)
+    
+    update_section(user_instance.section_id)
+    return JsonResponse({"message": "Usage, bill, and section load updated successfully."})
+
+@csrf_exempt
+def update_generator(request):
+    """
+    API endpoint to update generator details.
+    Expects a POST request with a JSON payload.
+
+    Example payload:
+    {
+        "uuid": "gen_001",
+        "current_production": 120.5,
+        "efficiency": 85.3,
+        "fuel_cost": 10.5,
+        "emissions": 5.2,
+        "free": false,
+        "canserve": 500
+    }
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid HTTP method. Use POST."}, status=405)
+
+    # Parse JSON data
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON payload."}, status=400)
+
+    # Validate required field
+    generator_uuid = data.get("uuid")
+    if not generator_uuid:
+        return JsonResponse({"error": "Generator UUID is required."}, status=400)
+
+    # Get the generator instance
+    try:
+        generator_instance = user_model.generator.objects.get(uuid=generator_uuid)
+    except user_model.generator.DoesNotExist:
+        return JsonResponse({"error": f"Generator with UUID '{generator_uuid}' not found."}, status=404)
+
+    # Update generator fields if provided
+    if "current_production" in data:
+        generator_instance.current_production = data["current_production"]
+    if "efficiency" in data:
+        generator_instance.efficiency = data["efficiency"]
+    if "fuel_cost" in data:
+        generator_instance.fuel_cost = data["fuel_cost"]
+    if "emissions" in data:
+        generator_instance.emissions = data["emissions"]
+    if "free" in data:
+        generator_instance.free = data["free"]
+    if "canserve" in data:
+        generator_instance.canserve = data["canserve"]
+
+    # Save generator updates
+    try:
+        generator_instance.save()
+    except Exception as e:
+        return JsonResponse({"error": f"Error saving generator data: {e}"}, status=500)
+
+    return JsonResponse({"message": "Generator details updated successfully."})
+
+def update_section(id):
+    section = user_model.section.objects.filter(uuid=id).first()
+    
+    if not section:
+        print(f"Grid with UUID {id} not found.")
+        return
+    
+    try:
+        # Summing up the `load` values of all users in the given section
+        section.load = sum(user.load for user in user_model.bear.objects.filter(section_id=grid.uuid))
+        section.save()  # Save changes to the database
+        update_grid(section.grids)
+    except Exception as e:
+        print(f"Error updating grid: {e}")
+def update_grid(id):
+    grid = user_model.grid.objects.filter(uuid=id).first()
+    
+    if not grid:
+        print(f"Grid with UUID {id} not found.")
+        return
+    
+    try:
+        # Retrieve sections safely, handling missing sections
+        sec1 = user_model.section.objects.filter(uuid=grid.sec1).first()
+        sec2 = user_model.section.objects.filter(uuid=grid.sec2).first()
+        sec3 = user_model.section.objects.filter(uuid=grid.sec3).first()
+
+        # Initialize sum and add only existing sections
+        total_load = 0
+        if sec1:
+            total_load += sec1.load
+        else:
+            print(f"Warning: Section {grid.sec1} not found.")
+
+        if sec2:
+            total_load += sec2.load
+        else:
+            print(f"Warning: Section {grid.sec2} not found.")
+
+        if sec3:
+            total_load += sec3.load
+        else:
+            print(f"Warning: Section {grid.sec3} not found.")
+
+        # Update grid load
+        grid.load = total_load
+        grid.save()  # Save changes to the database
+        print(f"Grid {id} load updated successfully: {total_load} kW")
+
+    except Exception as e:
+        print(f"Error updating grid {id}: {e}")

@@ -12,7 +12,7 @@ payload = {
     "avg_usage": 175,
     "bill_amount": 50,
     "load": 80,
-    "section": "1"
+    "section_id": "1"
 }
 
 headers = {
