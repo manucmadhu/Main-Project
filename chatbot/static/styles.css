@@ -1,0 +1,123 @@
+/* Remove all scrolling behavior */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Container to center content and make sure it doesn't overflow */
+.container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Ensure space between the title, chat box, and input box */
+    align-items: center;
+    overflow: hidden; /* Prevents scroll within the container */
+}
+
+/* Full-page background image */
+.bg-image {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+/* Background overlay to darken the image if necessary */
+.background-overlay {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+/* Title style */
+.title {
+    color: white;
+    font-size: 5vw; /* Adjust font-size to viewport width for responsiveness */
+    font-family: 'Akira Expanded', sans-serif;
+    font-weight: 800;
+    text-align: center;
+    word-wrap: break-word;
+    margin-bottom: 2vh; /* Adjust margin to prevent overflow */
+}
+
+/* Chat box styling */
+.chat-box {
+    width: 80%;
+    height: 50%;
+    background: #D9D9D9;
+    border-radius: 30px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    margin-bottom: 20px; /* Ensure the input box has space */
+}
+
+/* Message bubbles */
+.message {
+    margin-bottom: 15px; /* Added margin to separate messages */
+    padding: 10px 20px;
+    font-size: 24px;
+    font-family: Arial, sans-serif;
+    border-radius: 20px;
+    max-width: 60%;
+    word-wrap: break-word;
+}
+
+.message.user {
+    background-color: #58DBD4;
+    align-self: flex-end;
+    text-align: right;
+}
+
+.message.bot {
+    background-color: #B6DB58;
+    align-self: flex-start;
+    text-align: left;
+}
+
+/* Input box styling */
+.input-box {
+    width: 80%;
+    background: #ADC6DF;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px; /* Provide space below the input box */
+}
+
+.input-box input {
+    flex: 1;
+    border: none;
+    font-size: 24px;
+    padding: 10px;
+    background: transparent;
+    outline: none;
+}
+
+.input-box button {
+    width: 175px;
+    height: 66px;
+    background: #1865B1;
+    border-radius: 15px;
+    color: white;
+    font-size: 24px;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    border: none;
+    margin-left: 20px;
+}

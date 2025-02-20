@@ -951,7 +951,7 @@ def update_section(id):
     
     try:
         # Summing up the `load` values of all users in the given section
-        section.load = sum(user.load for user in user_model.bear.objects.filter(section_id=grid.uuid))
+        section.load = sum(user.load for user in user_model.bear.objects.filter(section_id=section.uuid))
         section.save()  # Save changes to the database
         update_grid(section.grids)
     except Exception as e:

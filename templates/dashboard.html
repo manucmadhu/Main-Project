@@ -24,4 +24,24 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-header">Talk to Chatbot</div>
+            <div class="card-body">
+                <p class="card-text">Ask your doubts.</p>
+                <a href="{% url 'chatbot_api' user_id=user.uuid%}" class="btn btn-light">Chatbot</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">File a Complaint</div>
+            <div class="card-body">
+                <p class="card-text">File your Complaints online..</p>
+                <a href="#" class="btn btn-light">Complaint</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

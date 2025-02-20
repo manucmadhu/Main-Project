@@ -1,14 +1,50 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chatbot{% endblock %}
 
 {% block content %}
-<div class="chatbot">
-    <h2>Power Chat</h2>
-    <div id="chat-box">
-        <!-- Chat messages will be dynamically loaded here -->
+<div class="container mt-5">
+    <h2 class="text-center">Chatbot Assistant</h2>
+
+    <div id="chat-box" class="border p-3 rounded" style="height: 400px; overflow-y: auto; background-color: #f8f9fa;">
+        <p><strong>Chatbot:</strong> Hi {{ user.name }}, how can I assist you today?</p>
     </div>
-    <form id="chat-form">
-        <input type="text" id="user-query" placeholder="Enter your query">
-        <button type="submit">Send</button>
-    </form>
+
+    <div class="input-group mt-3">
+        <input type="text" id="user-input" class="form-control" placeholder="Type a message..." onkeypress="checkEnter(event)">
+        <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+    </div>
 </div>
+
+<script>
+    function appendMessage(sender, text) {
+        let chatBox = document.getElementById("chat-box");
+        let messageDiv = document.createElement("p");
+        messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function sendMessage() {
+        let userInput = document.getElementById("user-input").value.trim();
+        if (!userInput) return;
+
+        appendMessage("You", userInput);
+        document.getElementById("user-input").value = "";
+
+        fetch("{% url 'chatbot_api' user_id=user.uuid %}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userInput })
+        })
+        .then(response => response.json())
+        .then(data => appendMessage("Chatbot", data.response))
+        .catch(error => console.error("Error:", error));
+    }
+
+    function checkEnter(event) {
+        if (event.key === "Enter") sendMessage();
+    }
+</script>
 {% endblock %}

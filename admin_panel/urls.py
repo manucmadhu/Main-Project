@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 from users import views as user_views
-
+from chatbot import views as chatbot_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('generators/<int:generator_id>', views.view_generator, name='view_generator'),  # Corrected URL pattern
@@ -26,4 +26,5 @@ urlpatterns = [
     path("gross-power-data/", views.gross_power_data, name="gross-power-data"),
     path('maintenance/', views.gross_maintenance, name='gross_maintenance'),
     path('api/update-usage-bill/', views.update_usage_and_bill, name='update_usage_and_bill'),
+    path('chabot/<int:user_id>',chatbot_views.chatbot_api,name='chatbot_api')
 ]

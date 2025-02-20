@@ -1,0 +1,614 @@
+{
+  "intents": [
+      {
+          "tag": "greeting",
+          "patterns": [
+              "Hello",
+              "Hi",
+              "Hey",
+              "Good morning",
+              "Good evening",
+              "Hi there",
+              "Greetings",
+              "Hello there",
+              "Howdy",
+              "What's up?",
+              "Good day",
+              "Hello, how are you?",
+              "Hi, nice to meet you",
+              "Hey there!",
+              "Good afternoon",
+              "How's it going?"
+          ],
+          "responses": [
+              "Hello! How can I assist you today?",
+              "Hi there! How can I help?",
+              "Hey! What can I do for you?",
+              "Good day! How may I help?",
+              "Hi! What brings you here today?",
+              "Hello! I'm doing well, thank you. How can I help?"
+          ]
+      },
+      {
+          "tag": "goodbye",
+          "patterns": [
+              "Bye",
+              "See you later",
+              "Goodbye",
+              "Take care",
+              "Farewell",
+              "Have a good day",
+              "See you soon",
+              "Adios",
+              "Peace out",
+              "Catch you later"
+          ],
+          "responses": [
+              "Goodbye! Have a great day!",
+              "See you later!",
+              "Take care!",
+              "Farewell!",
+              "Have a wonderful day!",
+              "You too! It was nice talking to you.",
+              "See you soon!",
+              "Goodbye!"
+          ]
+      },
+      {
+          "tag": "billing",
+          "patterns": [
+              "How can I pay my bill?",
+              "What is my current bill amount?",
+              "Check my bill",
+              "Billing details",
+              "I need to pay my electricity bill",
+              "What do I owe?",
+              "How much do I owe?",
+              "Can I see my bill?",
+              "Bill payment options",
+              "When is my bill due?",
+              "I have a question about my bill",
+              "My bill is too high",
+              "I think there's an error on my bill",
+              "Can I get a copy of my bill?"
+          ],
+          "responses": [
+              "You can pay your bill through our app or website. Would you like me to guide you?",
+              "Your bill details can be accessed in the user dashboard.",
+              "We offer several payment options. Please check our website for details.",
+              "Your current bill amount is [amount].",
+              "I'd be happy to answer your billing questions. What would you like to know?",
+              "You can download a copy of your bill from your online account."
+          ]
+      },
+      {
+          "tag": "power_outage",
+          "patterns": [
+              "Is there a power outage?",
+              "Why is my power out?",
+              "Report a power outage",
+              "Electricity is not working",
+              "Power is down",
+              "No electricity",
+              "My lights are off",
+              "Outage in my area",
+              "Is there a blackout?",
+              "Power cut",
+              "My power is flickering",
+              "How long will the power be out?",
+              "Power outage map"
+          ],
+          "responses": [
+              "Please check our outage map or report an issue on our website.",
+              "There might be a local outage. Please provide your location to check.",
+              "We are aware of a power outage in your area and are working to restore power.",
+              "Please report the outage with your location so we can investigate."
+          ]
+      },
+      {
+          "tag": "power_saving_tips",
+          "patterns": [
+              "How can I save power?",
+              "Give me some power-saving tips",
+              "How to reduce my electricity bill?",
+              "Tips to lower my energy bill",
+              "Ways to conserve electricity",
+              "Best ways to save on electricity"
+          ],
+          "responses": [
+              "Use LED bulbs instead of incandescent bulbs to reduce electricity usage.",
+              "Unplug appliances when not in use to prevent standby power consumption.",
+              "Use energy-efficient appliances to lower power consumption.",
+              "Set your AC thermostat to 24-26\u00b0C to save energy."
+          ]
+      },
+      {
+          "tag": "ac_efficiency",
+          "patterns": [
+              "How to save power using AC?",
+              "Tips for AC efficiency",
+              "Reduce AC electricity usage",
+              "Efficient AC usage",
+              "AC energy saving tips",
+              "How to make my AC more efficient"
+          ],
+          "responses": [
+              "Keep your thermostat at a higher temperature when you are not home.",
+              "Use fans to circulate air and allow for higher thermostat settings.",
+              "Regularly clean or replace air filters to maintain efficiency."
+          ]
+      },
+      {
+          "tag": "appliance_recommendation",
+          "patterns": [
+              "Which appliances save more energy?",
+              "Best energy-efficient appliances?",
+              "Recommend energy saving appliances",
+              "Most efficient appliances to buy",
+              "What are the best energy-saving devices?"
+          ],
+          "responses": [
+              "Energy-efficient refrigerators, LED bulbs, and inverter ACs are great choices.",
+              "Consider using smart thermostats and power strips to reduce wastage.",
+              "Front-load washing machines consume less water and electricity compared to top-load ones."
+          ]
+      },
+      {
+          "tag": "solar_power",
+          "patterns": [
+              "Is solar power a good investment?",
+              "Should I install solar panels?",
+              "How do solar panels work?",
+              "What are the benefits of solar energy?",
+              "How much do solar panels cost?",
+              "Can I save money with solar energy?"
+          ],
+          "responses": [
+              "Solar power can significantly reduce your electricity bills over time.",
+              "Installing solar panels is a great long-term investment for energy savings.",
+              "Solar panels convert sunlight into electricity, reducing reliance on the grid."
+          ]
+      },
+      {
+          "tag": "energy_efficiency",
+          "patterns": [
+              "Tell me about energy efficiency",
+              "Give me information on energy efficiency",
+              "Explain energy efficiency to me",
+              "I need help with energy efficiency",
+              "How does energy efficiency work?",
+              "What is energy efficiency?",
+              "Can you provide guidance on energy efficiency?",
+              "Help me understand energy efficiency",
+              "What should I do about energy efficiency?",
+              "Is energy efficiency important?",
+              "Why is energy efficiency necessary?"
+          ],
+          "responses": [
+              "Energy efficiency is an important aspect of modern energy management.",
+              "Understanding energy efficiency can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better energy efficiency optimization?"
+          ]
+      },
+      {
+          "tag": "smart_meters",
+          "patterns": [
+              "Tell me about smart meters",
+              "Give me information on smart meters",
+              "Explain smart meters to me",
+              "I need help with smart meters",
+              "How does smart meters work?",
+              "What is smart meters?",
+              "Can you provide guidance on smart meters?",
+              "Help me understand smart meters",
+              "What should I do about smart meters?",
+              "Is smart meters important?",
+              "Why is smart meters necessary?"
+          ],
+          "responses": [
+              "Smart meters is an important aspect of modern energy management.",
+              "Understanding smart meters can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better smart meters optimization?"
+          ]
+      },
+      {
+          "tag": "home_automation",
+          "patterns": [
+              "Tell me about home automation",
+              "Give me information on home automation",
+              "Explain home automation to me",
+              "I need help with home automation",
+              "How does home automation work?",
+              "What is home automation?",
+              "Can you provide guidance on home automation?",
+              "Help me understand home automation",
+              "What should I do about home automation?",
+              "Is home automation important?",
+              "Why is home automation necessary?"
+          ],
+          "responses": [
+              "Home automation is an important aspect of modern energy management.",
+              "Understanding home automation can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better home automation optimization?"
+          ]
+      },
+      {
+          "tag": "electric_vehicles",
+          "patterns": [
+              "Tell me about electric vehicles",
+              "Give me information on electric vehicles",
+              "Explain electric vehicles to me",
+              "I need help with electric vehicles",
+              "How does electric vehicles work?",
+              "What is electric vehicles?",
+              "Can you provide guidance on electric vehicles?",
+              "Help me understand electric vehicles",
+              "What should I do about electric vehicles?",
+              "Is electric vehicles important?",
+              "Why is electric vehicles necessary?"
+          ],
+          "responses": [
+              "Electric vehicles is an important aspect of modern energy management.",
+              "Understanding electric vehicles can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better electric vehicles optimization?"
+          ]
+      },
+      {
+          "tag": "renewable_energy_sources",
+          "patterns": [
+              "Tell me about renewable energy sources",
+              "Give me information on renewable energy sources",
+              "Explain renewable energy sources to me",
+              "I need help with renewable energy sources",
+              "How does renewable energy sources work?",
+              "What is renewable energy sources?",
+              "Can you provide guidance on renewable energy sources?",
+              "Help me understand renewable energy sources",
+              "What should I do about renewable energy sources?",
+              "Is renewable energy sources important?",
+              "Why is renewable energy sources necessary?"
+          ],
+          "responses": [
+              "Renewable energy sources is an important aspect of modern energy management.",
+              "Understanding renewable energy sources can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better renewable energy sources optimization?"
+          ]
+      },
+      {
+          "tag": "smart_grids",
+          "patterns": [
+              "Tell me about smart grids",
+              "Give me information on smart grids",
+              "Explain smart grids to me",
+              "I need help with smart grids",
+              "How does smart grids work?",
+              "What is smart grids?",
+              "Can you provide guidance on smart grids?",
+              "Help me understand smart grids",
+              "What should I do about smart grids?",
+              "Is smart grids important?",
+              "Why is smart grids necessary?"
+          ],
+          "responses": [
+              "Smart grids is an important aspect of modern energy management.",
+              "Understanding smart grids can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better smart grids optimization?"
+          ]
+      },
+      {
+          "tag": "power_fluctuations",
+          "patterns": [
+              "Tell me about power fluctuations",
+              "Give me information on power fluctuations",
+              "Explain power fluctuations to me",
+              "I need help with power fluctuations",
+              "How does power fluctuations work?",
+              "What is power fluctuations?",
+              "Can you provide guidance on power fluctuations?",
+              "Help me understand power fluctuations",
+              "What should I do about power fluctuations?",
+              "Is power fluctuations important?",
+              "Why is power fluctuations necessary?"
+          ],
+          "responses": [
+              "Power fluctuations is an important aspect of modern energy management.",
+              "Understanding power fluctuations can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better power fluctuations optimization?"
+          ]
+      },
+      {
+          "tag": "backup_generators",
+          "patterns": [
+              "Tell me about backup generators",
+              "Give me information on backup generators",
+              "Explain backup generators to me",
+              "I need help with backup generators",
+              "How does backup generators work?",
+              "What is backup generators?",
+              "Can you provide guidance on backup generators?",
+              "Help me understand backup generators",
+              "What should I do about backup generators?",
+              "Is backup generators important?",
+              "Why is backup generators necessary?"
+          ],
+          "responses": [
+              "Backup generators is an important aspect of modern energy management.",
+              "Understanding backup generators can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better backup generators optimization?"
+          ]
+      },
+      {
+          "tag": "battery_storage_systems",
+          "patterns": [
+              "Tell me about battery storage systems",
+              "Give me information on battery storage systems",
+              "Explain battery storage systems to me",
+              "I need help with battery storage systems",
+              "How does battery storage systems work?",
+              "What is battery storage systems?",
+              "Can you provide guidance on battery storage systems?",
+              "Help me understand battery storage systems",
+              "What should I do about battery storage systems?",
+              "Is battery storage systems important?",
+              "Why is battery storage systems necessary?"
+          ],
+          "responses": [
+              "Battery storage systems is an important aspect of modern energy management.",
+              "Understanding battery storage systems can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better battery storage systems optimization?"
+          ]
+      },
+      {
+          "tag": "government_energy_subsidies",
+          "patterns": [
+              "Tell me about government energy subsidies",
+              "Give me information on government energy subsidies",
+              "Explain government energy subsidies to me",
+              "I need help with government energy subsidies",
+              "How does government energy subsidies work?",
+              "What is government energy subsidies?",
+              "Can you provide guidance on government energy subsidies?",
+              "Help me understand government energy subsidies",
+              "What should I do about government energy subsidies?",
+              "Is government energy subsidies important?",
+              "Why is government energy subsidies necessary?"
+          ],
+          "responses": [
+              "Government energy subsidies is an important aspect of modern energy management.",
+              "Understanding government energy subsidies can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better government energy subsidies optimization?"
+          ]
+      },
+      {
+          "tag": "electricity_tariffs",
+          "patterns": [
+              "Tell me about electricity tariffs",
+              "Give me information on electricity tariffs",
+              "Explain electricity tariffs to me",
+              "I need help with electricity tariffs",
+              "How does electricity tariffs work?",
+              "What is electricity tariffs?",
+              "Can you provide guidance on electricity tariffs?",
+              "Help me understand electricity tariffs",
+              "What should I do about electricity tariffs?",
+              "Is electricity tariffs important?",
+              "Why is electricity tariffs necessary?"
+          ],
+          "responses": [
+              "Electricity tariffs is an important aspect of modern energy management.",
+              "Understanding electricity tariffs can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better electricity tariffs optimization?"
+          ]
+      },
+      {
+          "tag": "power_line_maintenance",
+          "patterns": [
+              "Tell me about power line maintenance",
+              "Give me information on power line maintenance",
+              "Explain power line maintenance to me",
+              "I need help with power line maintenance",
+              "How does power line maintenance work?",
+              "What is power line maintenance?",
+              "Can you provide guidance on power line maintenance?",
+              "Help me understand power line maintenance",
+              "What should I do about power line maintenance?",
+              "Is power line maintenance important?",
+              "Why is power line maintenance necessary?"
+          ],
+          "responses": [
+              "Power line maintenance is an important aspect of modern energy management.",
+              "Understanding power line maintenance can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better power line maintenance optimization?"
+          ]
+      },
+      {
+          "tag": "grid_overloads",
+          "patterns": [
+              "Tell me about grid overloads",
+              "Give me information on grid overloads",
+              "Explain grid overloads to me",
+              "I need help with grid overloads",
+              "How does grid overloads work?",
+              "What is grid overloads?",
+              "Can you provide guidance on grid overloads?",
+              "Help me understand grid overloads",
+              "What should I do about grid overloads?",
+              "Is grid overloads important?",
+              "Why is grid overloads necessary?"
+          ],
+          "responses": [
+              "Grid overloads is an important aspect of modern energy management.",
+              "Understanding grid overloads can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better grid overloads optimization?"
+          ]
+      },
+      {
+          "tag": "carbon_footprint_reduction",
+          "patterns": [
+              "Tell me about carbon footprint reduction",
+              "Give me information on carbon footprint reduction",
+              "Explain carbon footprint reduction to me",
+              "I need help with carbon footprint reduction",
+              "How does carbon footprint reduction work?",
+              "What is carbon footprint reduction?",
+              "Can you provide guidance on carbon footprint reduction?",
+              "Help me understand carbon footprint reduction",
+              "What should I do about carbon footprint reduction?",
+              "Is carbon footprint reduction important?",
+              "Why is carbon footprint reduction necessary?"
+          ],
+          "responses": [
+              "Carbon footprint reduction is an important aspect of modern energy management.",
+              "Understanding carbon footprint reduction can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better carbon footprint reduction optimization?"
+          ]
+      },
+      {
+          "tag": "energy_audits",
+          "patterns": [
+              "Tell me about energy audits",
+              "Give me information on energy audits",
+              "Explain energy audits to me",
+              "I need help with energy audits",
+              "How does energy audits work?",
+              "What is energy audits?",
+              "Can you provide guidance on energy audits?",
+              "Help me understand energy audits",
+              "What should I do about energy audits?",
+              "Is energy audits important?",
+              "Why is energy audits necessary?"
+          ],
+          "responses": [
+              "Energy audits is an important aspect of modern energy management.",
+              "Understanding energy audits can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better energy audits optimization?"
+          ]
+      },
+      {
+          "tag": "power_theft_prevention",
+          "patterns": [
+              "Tell me about power theft prevention",
+              "Give me information on power theft prevention",
+              "Explain power theft prevention to me",
+              "I need help with power theft prevention",
+              "How does power theft prevention work?",
+              "What is power theft prevention?",
+              "Can you provide guidance on power theft prevention?",
+              "Help me understand power theft prevention",
+              "What should I do about power theft prevention?",
+              "Is power theft prevention important?",
+              "Why is power theft prevention necessary?"
+          ],
+          "responses": [
+              "Power theft prevention is an important aspect of modern energy management.",
+              "Understanding power theft prevention can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better power theft prevention optimization?"
+          ]
+      },
+      {
+          "tag": "industrial_energy_savings",
+          "patterns": [
+              "Tell me about industrial energy savings",
+              "Give me information on industrial energy savings",
+              "Explain industrial energy savings to me",
+              "I need help with industrial energy savings",
+              "How does industrial energy savings work?",
+              "What is industrial energy savings?",
+              "Can you provide guidance on industrial energy savings?",
+              "Help me understand industrial energy savings",
+              "What should I do about industrial energy savings?",
+              "Is industrial energy savings important?",
+              "Why is industrial energy savings necessary?"
+          ],
+          "responses": [
+              "Industrial energy savings is an important aspect of modern energy management.",
+              "Understanding industrial energy savings can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better industrial energy savings optimization?"
+          ]
+      },
+      {
+          "tag": "home_insulation_techniques",
+          "patterns": [
+              "Tell me about home insulation techniques",
+              "Give me information on home insulation techniques",
+              "Explain home insulation techniques to me",
+              "I need help with home insulation techniques",
+              "How does home insulation techniques work?",
+              "What is home insulation techniques?",
+              "Can you provide guidance on home insulation techniques?",
+              "Help me understand home insulation techniques",
+              "What should I do about home insulation techniques?",
+              "Is home insulation techniques important?",
+              "Why is home insulation techniques necessary?"
+          ],
+          "responses": [
+              "Home insulation techniques is an important aspect of modern energy management.",
+              "Understanding home insulation techniques can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better home insulation techniques optimization?"
+          ]
+      },
+      {
+          "tag": "LED_vs_CFL_bulbs",
+          "patterns": [
+              "Tell me about LED vs CFL bulbs",
+              "Give me information on LED vs CFL bulbs",
+              "Explain LED vs CFL bulbs to me",
+              "I need help with LED vs CFL bulbs",
+              "How does LED vs CFL bulbs work?",
+              "What is LED vs CFL bulbs?",
+              "Can you provide guidance on LED vs CFL bulbs?",
+              "Help me understand LED vs CFL bulbs",
+              "What should I do about LED vs CFL bulbs?",
+              "Is LED vs CFL bulbs important?",
+              "Why is LED vs CFL bulbs necessary?"
+          ],
+          "responses": [
+              "Led vs cfl bulbs is an important aspect of modern energy management.",
+              "Understanding LED vs CFL bulbs can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better LED vs CFL bulbs optimization?"
+          ]
+      },
+      {
+          "tag": "energy_consumption_tracking",
+          "patterns": [
+              "Tell me about energy consumption tracking",
+              "Give me information on energy consumption tracking",
+              "Explain energy consumption tracking to me",
+              "I need help with energy consumption tracking",
+              "How does energy consumption tracking work?",
+              "What is energy consumption tracking?",
+              "Can you provide guidance on energy consumption tracking?",
+              "Help me understand energy consumption tracking",
+              "What should I do about energy consumption tracking?",
+              "Is energy consumption tracking important?",
+              "Why is energy consumption tracking necessary?"
+          ],
+          "responses": [
+              "Energy consumption tracking is an important aspect of modern energy management.",
+              "Understanding energy consumption tracking can help you reduce your energy costs.",
+              "Would you like me to suggest solutions for better energy consumption tracking optimization?"
+          ]
+      },
+      {
+        "tag": "billing",
+        "patterns": [
+          "How much do I owe?",
+          "What is my bill?",
+          "Check my electricity bill",
+          "Can you tell me my bill amount?",
+          "What's my current bill?",
+          "Show my outstanding payment",
+          "Bill amount please",
+          "Electricity bill due?",
+          "Do I have any pending payments?",
+          "How much do I need to pay?"
+        ],
+        "responses": [
+          "Your current bill amount is [amount].",
+          "You owe [amount] this month.",
+          "Your bill is [amount]. Would you like to make a payment?",
+          "[amount] is due for this billing cycle."
+        ]
+      }      
+  ]
+}

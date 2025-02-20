@@ -3,6 +3,7 @@ from django.urls import path, include
 from users import views as user_views
 from admin_panel import views as admin_views
 from dashboard import views as dashboard_views
+from chatbot import views as chatbot_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('logout/', user_views.login_view, name='logout'),
@@ -33,5 +34,6 @@ urlpatterns = [
     path("rankings/", admin_views.rankings, name="rankings"),
     path("gross-power-data/", admin_views.gross_power_data, name="gross-power-data"),
     path('maintenance/', admin_views.gross_maintenance, name='gross_maintenance'),
+    path('chabot/<int:user_id>',chatbot_views.chatbot_api,name='chatbot_api')
     
 ]
