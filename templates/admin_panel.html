@@ -138,6 +138,19 @@
             </div>
         </div>
     </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Send Bill Reminder</div>
+            <div class="card-body">
+                <p>Click to send a bill reminder email to the user.</p>
+                <form action="{% url 'send_bill_reminder' user_id=user.uuid %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-light">Send Reminder</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
     
 </div>
 

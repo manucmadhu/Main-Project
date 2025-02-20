@@ -296,9 +296,33 @@ def sec_off(section_id):
     section.save()
     return
 
-def send_error_message(user_id,start,end):
-    # Send error message to user
-    return
+from django.core.mail import send_mail
+from users.models import bear  # Import the user model
+from django.conf import settings
+
+def send_error_message(user_id, start, end):
+    """Send an email to notify the user of a power outage."""
+    user = bear.objects.filter(uuid=user_id).first()
+    
+    if not user or not user.email:
+        print("User not found or email not provided")
+        return
+
+    subject = "Power Outage Notification"
+    message = (
+        f"Dear {user.name},\n\n"
+        "We would like to inform you about a power outage in your area.\n"
+        f"Outage Start Time: {start}\n"
+        f"Estimated Restoration Time: {end}\n\n"
+        "We apologize for the inconvenience and appreciate your patience.\n"
+        "Thank you,\nPower Grid Management Team"
+    )
+
+    try:
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+        print(f"Power outage notification sent to {user.email}")
+    except Exception as e:
+        print(f"Error sending email: {e}")
 
 def view_user(request,user_id):
     user=get_object_or_404(user_model.bear,uuid=user_id)
@@ -1026,3 +1050,36 @@ def manage_complaints(request):
         return redirect("manage_complaints")
 
     return render(request, "manage_complaints.html", {"complaints": complaints})
+
+from django.shortcuts import redirect
+from django.contrib import messages
+from users.models import bear, bill
+from django.core.mail import send_mail
+from django.conf import settings
+
+
+def send_bill_reminder(request, user_id):
+    """Send an email reminder for pending bill payment."""
+    user = bear.objects.filter(uuid=user_id).first()  # Fetch user details
+    if not user:
+        return JsonResponse({"error": "User not found."}, status=404)
+
+    bill = user_model.bill.objects.filter(user=user_id).first()  # Fetch the user's bill
+    if not bill:
+        return JsonResponse({"error": "No bill found for this user."}, status=404)
+
+    # Email details
+    subject = "Electricity Bill Payment Reminder"
+    message = f"Dear {user.name},\n\nYour pending bill amount is ₹{bill.pending_amount}.\nPlease make the payment at your earliest convenience.\n\nThank you!"
+    recipient_email = user.email  # Ensure email exists in `bear` model
+
+    # Send email
+    send_mail(
+        subject,
+        message,
+        "admin@powergrid.com",  # Replace with your actual sender email
+        [recipient_email],
+        fail_silently=False,
+    )
+
+    return redirect("admin_panel", user_id=user_id)  # Redirect back to admin panel

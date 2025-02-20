@@ -39,5 +39,8 @@ urlpatterns = [
     path('chabot/<int:user_id>',chatbot_views.chatbot_api,name='chatbot_api'),
     path("file-complaint/<str:user_id>/", user_views.file_complaint, name="file_complaint"),
     path("user-complaints/<str:user_id>/", user_views.user_complaints, name="user_complaints"),
-    path("complaint-status/<int:complaint_id>/", user_views.complaint_status, name="complaint_status")  
+    path("complaint-status/<int:complaint_id>/", user_views.complaint_status, name="complaint_status"),
+   path("send-bill-reminder/<str:user_id>/", admin_views.send_bill_reminder, name="send_bill_reminder"),
+
+ 
 ]
