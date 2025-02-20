@@ -433,6 +433,12 @@ def make_maintenance(request,obj):  #front end not created
         estimated_cost=request.POST.get('est_cost')
         user_model.Schedule(uuid=id,obj=obj,start_time=start_time,end_time=end_time,est_cost=estimated_cost,completed=False).save()
         return redirect('show_maintenance')
+    
+    try:
+        for user in bear.objects.all():
+            send_error_message(user.uuid,start_time,end_time)
+    except Exception as e:
+        print(e)
     return render(request, 'make_maintenance.html', {'Object': obj})
 
 
